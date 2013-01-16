@@ -23,8 +23,8 @@ $titlestring = "<div id='titleData' class='tab'>\n<table cellspacing='0'><thead>
 if (mysql_num_rows($titleresult) > 0){
   while($row = mysql_fetch_object($titleresult)){
   $titlestring .= '<tr>';
-	$titlestring .= "<td><a href='http://www.linkedin.com/search/fpsearch?title=" .$row->LCA_CASE_JOB_TITLE. "'>" .$row->LCA_CASE_JOB_TITLE. "</a></td>";
-    $titlestring .= "<td>$".number_format($row->LCA_CASE_WAGE_RATE_FROM)."</td>";
+	$titlestring .= "<td><a href='http://www.linkedin.com/search/fpsearch?title=" .$row->. "'>" .$row->. "</a></td>";
+    $titlestring .= "<td>$".number_format($row->)."</td>";
 
     $titlestring .= "</tr>\n";
   }
