@@ -2,6 +2,10 @@
 
 ## 2026-06-08
 
+- Replaced backend connection `die()` paths in `find.php` with a generic
+  fail-closed no-match response.
+- Added a PHP test that rejects exposed backend connection errors and verifies
+  the unconfigured search endpoint response.
 - Added a Makefile verification gate for PHP syntax checks and output escaping
   tests.
 - Escaped search query parameters before rendering them into HTML attributes

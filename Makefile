@@ -8,6 +8,7 @@ lint:
 
 test:
 	$(PHP) tests/check-index-escaping.php
+	$(PHP) tests/check-find-fail-closed.php
 
 build: lint
 

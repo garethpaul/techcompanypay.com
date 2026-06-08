@@ -17,11 +17,21 @@ if (HOST === '' || USER === '' || DB === '' || !function_exists('mysql_connect')
   return;
 }
 
-$connect = mysql_connect("$HOST", "$USER", "$PW")
-or die('Could not connect to mysql server.' );
+function tcp_no_matches() {
+  echo 'No matches!';
+}
 
-mysql_select_db(DB, $connect)
-or die('Could not select database.');
+$connect = mysql_connect(HOST, USER, PW);
+if (!$connect) {
+  tcp_no_matches();
+  return;
+}
+
+if (!mysql_select_db(DB, $connect)) {
+  tcp_no_matches();
+  mysql_close($connect);
+  return;
+}
 
 $term = tcp_post_value('search_term');
 $city = tcp_post_value('city');

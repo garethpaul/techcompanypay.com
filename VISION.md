@@ -16,6 +16,7 @@ Priority:
 
 - Preserve the search-page and result-endpoint intent
 - Keep database credentials empty and out of source control
+- Keep backend connection failures generic in user-facing responses
 - Maintain the disclaimer around data accuracy
 - Treat old PHP `mysql_*` APIs and incomplete SQL as legacy risks
 

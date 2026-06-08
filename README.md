@@ -46,7 +46,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 ## Testing and Verification
 
-- `make verify` runs PHP syntax checks and a query-escaping output test.
+- `make verify` runs PHP syntax checks, query-escaping output tests, and a
+  fail-closed check for the unconfigured legacy search endpoint.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
