@@ -35,6 +35,11 @@ Contribution rules:
 
 ## Security And Responsible Use
 
+Canonical security policy and reporting:
+
+- [`SECURITY.md`](SECURITY.md)
+
+
 Salary and profile-derived data can affect real people. The project should make
 data sources, aggregation, uncertainty, and removal expectations clear, and
 should avoid exposing raw personal profile data.
