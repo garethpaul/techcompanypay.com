@@ -1,5 +1,8 @@
 # techcompanypay.com
 
+<!-- README-OVERVIEW-IMAGE -->
+![Project overview](docs/readme-overview.svg)
+
 ## Overview
 
 `garethpaul/techcompanypay.com` is a public sample, documentation, or utility project. TechCompanyPay.com repository
@@ -68,4 +71,3 @@ Keep changes small and tied to the project that is already present in this repos
 Prior README summary:
 
 > techcompanypay.com <!-- README-OVERVIEW-IMAGE --> techcompanypay.com ==================
-
