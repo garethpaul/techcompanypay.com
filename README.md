@@ -70,4 +70,4 @@ Keep changes small and tied to the project that is already present in this repos
 
 Prior README summary:
 
-> techcompanypay.com <!-- README-OVERVIEW-IMAGE --> techcompanypay.com ==================
+> techcompanypay.com techcompanypay.com ==================
