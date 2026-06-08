@@ -14,3 +14,5 @@
 - Made `find.php` parse under PHP and fail closed when database configuration
   or legacy mysql support is unavailable.
 - Updated embedded first-party/share URLs to HTTPS where possible.
+- Added canonical `docs/plans` coverage and a PHP docs-plan check under
+  `make check`.

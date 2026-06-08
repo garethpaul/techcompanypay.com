@@ -18,6 +18,7 @@ Priority:
 - Keep database credentials empty and out of source control
 - Keep backend connection failures generic in user-facing responses
 - Maintain the disclaimer around data accuracy
+- Keep completed maintenance plans under `docs/plans`
 - Treat old PHP `mysql_*` APIs and incomplete SQL as legacy risks
 
 Next priorities:

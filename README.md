@@ -12,7 +12,15 @@ This README is based on the checked-in source, manifests, scripts, and repositor
 ## Repository Contents
 
 - `README.md` - project overview and local usage notes
+- `CHANGES.md` - maintenance history for PHP safety checks
+- `Makefile` - local verification entry points
+- `TODO` - legacy deployment and product notes
+- `docs/plans` - completed maintenance plans for the current baseline
+- `find.php` - legacy search endpoint
+- `index.php` - search page and sharing metadata
+- `plans` - historical implementation notes
 - `SECURITY.md` - security reporting and disclosure guidance
+- `tests` - PHP syntax and output behavior checks
 - `VISION.md` - project direction and maintenance guardrails
 
 Additional scan context:
@@ -20,7 +28,7 @@ Additional scan context:
 - Source directories: no top-level source directories detected
 - Dependency and build manifests: none detected
 - Entry points or build surfaces: none detected
-- Test-looking files: no obvious test files detected
+- Test-looking files: tests/check-find-fail-closed.php, tests/check-index-escaping.php
 
 ## Getting Started
 
@@ -48,6 +56,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 - `make check` runs PHP syntax checks, query-escaping output tests, and a
   fail-closed check for the unconfigured legacy search endpoint.
+- `make check` also requires completed canonical plans under `docs/plans`.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
@@ -65,6 +74,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
 - See `VISION.md` for project direction and contribution guardrails.
+- See `docs/plans/2026-06-08-techcompanypay-baseline.md` for the canonical PHP
+  search safety baseline.
 
 ## Contributing
 
