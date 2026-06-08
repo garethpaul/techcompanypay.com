@@ -56,6 +56,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 - `make check` runs PHP syntax checks, query-escaping output tests, and a
   fail-closed check for the unconfigured legacy search endpoint.
+- `make check` also verifies that PHP entry points keep basic response security
+  headers.
 - `make check` also requires completed canonical plans under `docs/plans`.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
@@ -76,6 +78,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - See `VISION.md` for project direction and contribution guardrails.
 - See `docs/plans/2026-06-08-techcompanypay-baseline.md` for the canonical PHP
   search safety baseline.
+- See `docs/plans/2026-06-08-response-security-headers.md` for the response
+  header guard.
 
 ## Contributing
 

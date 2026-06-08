@@ -4,6 +4,14 @@ define('USER', '');
 define('PW', '');
 define('DB', '');
 
+function tcp_send_security_headers() {
+  if (!headers_sent()) {
+    header('Content-Type: text/html; charset=UTF-8');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+  }
+}
+
 function tcp_post_value($key) {
   return isset($_POST[$key]) ? strip_tags(substr($_POST[$key], 0, 100)) : '';
 }
@@ -11,6 +19,8 @@ function tcp_post_value($key) {
 function tcp_linkedin_title($title) {
   return htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
 }
+
+tcp_send_security_headers();
 
 if (HOST === '' || USER === '' || DB === '' || !function_exists('mysql_connect')) {
   echo 'No matches!';

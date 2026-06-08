@@ -7,6 +7,14 @@ function tcp_html($value) {
 	return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
+function tcp_send_security_headers() {
+	if (!headers_sent()) {
+		header('Content-Type: text/html; charset=UTF-8');
+		header('X-Content-Type-Options: nosniff');
+		header('Referrer-Policy: strict-origin-when-cross-origin');
+	}
+}
+
 function tcp_share_url($company, $city) {
 	$query = '';
 	if ($company !== '') {
@@ -14,6 +22,8 @@ function tcp_share_url($company, $city) {
 	}
 	return 'https://techcompanypay.com/' . $query;
 }
+
+tcp_send_security_headers();
 
 $company = tcp_get('c');
 $city = tcp_get('l');

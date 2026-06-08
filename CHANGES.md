@@ -2,6 +2,8 @@
 
 ## 2026-06-08
 
+- Added explicit UTF-8 content type, `nosniff`, and referrer-policy headers for
+  PHP entry points with static verification.
 - Added `make check` as the shared repository verification alias.
 - Replaced backend connection `die()` paths in `find.php` with a generic
   fail-closed no-match response.
