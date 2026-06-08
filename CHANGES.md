@@ -2,6 +2,7 @@
 
 ## 2026-06-08
 
+- Added `make check` as the shared repository verification alias.
 - Replaced backend connection `die()` paths in `find.php` with a generic
   fail-closed no-match response.
 - Added a PHP test that rejects exposed backend connection errors and verifies

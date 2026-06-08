@@ -1,4 +1,4 @@
-.PHONY: lint test build verify
+.PHONY: build check lint test verify
 
 PHP ?= php
 
@@ -13,3 +13,5 @@ test:
 build: lint
 
 verify: lint test build
+
+check: verify
