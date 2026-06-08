@@ -1,8 +1,21 @@
 <?php
-define(HOST, "");
-define(USER, "");
-define(PW, "");
-define(DB, "");
+define('HOST', '');
+define('USER', '');
+define('PW', '');
+define('DB', '');
+
+function tcp_post_value($key) {
+  return isset($_POST[$key]) ? strip_tags(substr($_POST[$key], 0, 100)) : '';
+}
+
+function tcp_linkedin_title($title) {
+  return htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+}
+
+if (HOST === '' || USER === '' || DB === '' || !function_exists('mysql_connect')) {
+  echo 'No matches!';
+  return;
+}
 
 $connect = mysql_connect("$HOST", "$USER", "$PW")
 or die('Could not connect to mysql server.' );
@@ -10,21 +23,23 @@ or die('Could not connect to mysql server.' );
 mysql_select_db(DB, $connect)
 or die('Could not select database.');
 
-$term = strip_tags(substr($_POST['search_term'],0, 100));
-$city = strip_tags(substr($_POST['city'],0, 100));
-$city = mysql_escape_string($city);
-$term = mysql_escape_string($term);
+$term = tcp_post_value('search_term');
+$city = tcp_post_value('city');
+$city = mysql_real_escape_string($city);
+$term = mysql_real_escape_string($term);
 
-$titlesql = ""
+$titlesql = "";
 
-$titleresult = mysql_query($titlesql);
+$titleresult = $titlesql === '' ? false : mysql_query($titlesql);
 $titlestring = "<div id='titleData' class='tab'>\n<table cellspacing='0'><thead><tr><td>Function Group</td><td>Average Salary</td></tr></thead><tbody>";
 
-if (mysql_num_rows($titleresult) > 0){
+if ($titleresult && mysql_num_rows($titleresult) > 0){
   while($row = mysql_fetch_object($titleresult)){
+    $title = isset($row->title) ? $row->title : '';
+    $salary = isset($row->salary) ? $row->salary : 0;
   $titlestring .= '<tr>';
-	$titlestring .= "<td><a href='http://www.linkedin.com/search/fpsearch?title=" .$row->. "'>" .$row->. "</a></td>";
-    $titlestring .= "<td>$".number_format($row->)."</td>";
+	$titlestring .= "<td><a href='https://www.linkedin.com/search/fpsearch?title=" . rawurlencode($title) . "'>" . tcp_linkedin_title($title) . "</a></td>";
+    $titlestring .= "<td>$".number_format($salary)."</td>";
 
     $titlestring .= "</tr>\n";
   }
@@ -35,16 +50,18 @@ if (mysql_num_rows($titleresult) > 0){
 } 
 echo $titlestring;
 
-$groupsql = ""
+$groupsql = "";
 
-$groupresult = mysql_query($groupsql);
+$groupresult = $groupsql === '' ? false : mysql_query($groupsql);
 $groupstring = "<div id='titleData' class='tab'>\n<table cellspacing='0'>\n<thead><tr><td>Function Group</td><td>Average Salary</td></tr></thead><tbody>";
 
-if (mysql_num_rows($groupresult) > 0){
+if ($groupresult && mysql_num_rows($groupresult) > 0){
   while($row = mysql_fetch_object($groupresult)){
+    $group = isset($row->group_name) ? $row->group_name : '';
+    $salary = isset($row->salary) ? $row->salary : 0;
 	$groupstring .= '<tr>';
-    $groupstring .= "<td>".$row->ROW."</td>";
-    $groupstring .= "<td>$".number_format($row->ROW)."</td>";
+    $groupstring .= "<td>".htmlspecialchars($group, ENT_QUOTES, 'UTF-8')."</td>";
+    $groupstring .= "<td>$".number_format($salary)."</td>";
     $groupstring .= "</tr>\n";
   }
   $groupstring .= '</tbody></table></div>';

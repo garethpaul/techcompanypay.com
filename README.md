@@ -27,6 +27,7 @@ Additional scan context:
 ### Prerequisites
 
 - Git
+- PHP CLI for local syntax and output checks
 
 ### Setup
 
@@ -39,11 +40,13 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 ## Running or Using the Project
 
-- No single runtime entry point was identified. Start by reading the source files and manifests listed above.
+- Serve `index.php` with a PHP-capable web server for the legacy demo page.
+- `find.php` is the legacy search endpoint and requires database constants to
+  be configured before live use.
 
 ## Testing and Verification
 
-- No dedicated automated test command was identified from the checked-in files. Verify changes by running the relevant build or manually exercising the sample.
+- `make verify` runs PHP syntax checks and a query-escaping output test.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 

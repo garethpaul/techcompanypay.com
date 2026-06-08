@@ -1,15 +1,34 @@
 <?php
-$company = $_GET['c'];
-$city = $_GET['l'];
-$title = $_GET['t'];
+function tcp_get($key) {
+	return isset($_GET[$key]) ? $_GET[$key] : '';
+}
+
+function tcp_html($value) {
+	return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+
+function tcp_share_url($company, $city) {
+	$query = '';
+	if ($company !== '') {
+		$query = '?c=' . rawurlencode($company) . '&l=' . rawurlencode($city);
+	}
+	return 'https://techcompanypay.com/' . $query;
+}
+
+$company = tcp_get('c');
+$city = tcp_get('l');
+$title = tcp_get('t');
+$company_html = tcp_html($company);
+$city_html = tcp_html($city);
+$share_url_html = tcp_html(tcp_share_url($company, $city));
 ?>
 <html xmlns:og="http://ogp.me/ns#">
 <head>
    <title>TechCompanyPay</title>
 	<!-- SET FACEBOOK META -->
 	<meta property="og:title" content="TechCompanyPay"/>
-    <meta property="og:url" content="http://techcompanypay.com/<?php if ($company){ echo "?c=$company&l=$city"; } ?>"/>
-    <meta property="og:image" content="http://d2dixsj1sor9iw.cloudfront.net/images/og.png"/>
+    <meta property="og:url" content="<?php echo $share_url_html; ?>"/>
+    <meta property="og:image" content="https://d2dixsj1sor9iw.cloudfront.net/images/og.png"/>
     <meta property="og:site_name" content="TechCompanyPay"/>
     <meta property="og:description" content="A hack showing the titles and average pay of most of the tech giants employees with LinkedIn profiles."/>
 	
@@ -18,7 +37,7 @@ $title = $_GET['t'];
 	<link href='https://d2dixsj1sor9iw.cloudfront.net/css/stylesheet.css' rel='stylesheet' type='text/css'>
 	<!-- IMPORT JAVASCRIPT -->
 	<script type='text/javascript' src='https://dorkzvyk9srha.cloudfront.net/js/jquery-1.6.2.min.js'></script>
-		<script type='text/javascript' src='http://d2dixsj1sor9iw.cloudfront.net/javascript/core2.js'></script>
+		<script type='text/javascript' src='https://d2dixsj1sor9iw.cloudfront.net/javascript/core2.js'></script>
 </head>	
 <body>
 	<div id="header">
@@ -60,12 +79,12 @@ on the site. See <a href='#disclaimer'>the disclaimer</a> for more of this stuff
 				<td>
 	        <label class='label' for="search_term">Search Company</label> 
 			<br />
-	        <input class='input' type="text" name="search_term" id="search_term" <?php if ($company){ echo "value='".$company."'"; }?>/>
+	        <input class='input' type="text" name="search_term" id="search_term" value="<?php echo $company_html; ?>"/>
 				</td>
 			<td>
 			<label class='label' for="city">Search City</label> 
 			<br />
-			<input class='input' type="text" name="city" id="city" <?php if ($city){ echo "value='".$city."'"; }?> />
+			<input class='input' type="text" name="city" id="city" value="<?php echo $city_html; ?>" />
 			</td>
 			<td>
 				<input type='submit' style='margin-top:20px' id='submitbsearch' class='button'/>
@@ -103,7 +122,7 @@ site.</p>
 			  fjs.parentNode.insertBefore(js, fjs);
 			}(document, 'script', 'facebook-jssdk'));
 			</script>
-			<div class="fb-like" data-href="http://techcompanypay.com/<?php if ($company){ echo "?c=$company&l=$city"; } ?>" data-send="true" data-width="450" data-show-faces="false"></div>
+			<div class="fb-like" data-href="<?php echo $share_url_html; ?>" data-send="true" data-width="450" data-show-faces="false"></div>
 			
 			<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
 			<g:plusone></g:plusone>
@@ -113,7 +132,7 @@ site.</p>
 	<div id='message' class='column' style='display:none;'></div>
 	<script type='text/javascript'>
 	<?php
-	if ($company){
+	if ($company !== ''){
 		echo "ajax_search();";
 	}
 	?>
@@ -124,6 +143,6 @@ var sc_project=7264690;
 var sc_invisible=1; 
 var sc_security="94fdf985"; 
 </script>
-<script type="text/javascript" src="http://www.statcounter.com/counter/counter_xhtml.js"></script>
+<script type="text/javascript" src="https://www.statcounter.com/counter/counter_xhtml.js"></script>
 </body>
 </html>
