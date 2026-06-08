@@ -8,8 +8,8 @@ $title = $_GET['t'];
    <title>TechCompanyPay</title>
 	<!-- SET FACEBOOK META -->
 	<meta property="og:title" content="TechCompanyPay"/>
-    <meta property="og:url" content="http://techcompanypay.com/<?php if ($company){ echo "?c=$company&l=$city"; } ?>"/>
-    <meta property="og:image" content="http://d2dixsj1sor9iw.cloudfront.net/images/og.png"/>
+    <meta property="og:url" content="https://techcompanypay.com/<?php if ($company){ echo "?c=$company&l=$city"; } ?>"/>
+    <meta property="og:image" content="https://d2dixsj1sor9iw.cloudfront.net/images/og.png"/>
     <meta property="og:site_name" content="TechCompanyPay"/>
     <meta property="og:description" content="A hack showing the titles and average pay of most of the tech giants employees with LinkedIn profiles."/>
 	
@@ -18,7 +18,7 @@ $title = $_GET['t'];
 	<link href='https://d2dixsj1sor9iw.cloudfront.net/css/stylesheet.css' rel='stylesheet' type='text/css'>
 	<!-- IMPORT JAVASCRIPT -->
 	<script type='text/javascript' src='https://dorkzvyk9srha.cloudfront.net/js/jquery-1.6.2.min.js'></script>
-		<script type='text/javascript' src='http://d2dixsj1sor9iw.cloudfront.net/javascript/core2.js'></script>
+		<script type='text/javascript' src='https://d2dixsj1sor9iw.cloudfront.net/javascript/core2.js'></script>
 </head>	
 <body>
 	<div id="header">
@@ -103,7 +103,7 @@ site.</p>
 			  fjs.parentNode.insertBefore(js, fjs);
 			}(document, 'script', 'facebook-jssdk'));
 			</script>
-			<div class="fb-like" data-href="http://techcompanypay.com/<?php if ($company){ echo "?c=$company&l=$city"; } ?>" data-send="true" data-width="450" data-show-faces="false"></div>
+			<div class="fb-like" data-href="https://techcompanypay.com/<?php if ($company){ echo "?c=$company&l=$city"; } ?>" data-send="true" data-width="450" data-show-faces="false"></div>
 			
 			<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
 			<g:plusone></g:plusone>
@@ -124,6 +124,6 @@ var sc_project=7264690;
 var sc_invisible=1; 
 var sc_security="94fdf985"; 
 </script>
-<script type="text/javascript" src="http://www.statcounter.com/counter/counter_xhtml.js"></script>
+<script type="text/javascript" src="https://www.statcounter.com/counter/counter_xhtml.js"></script>
 </body>
 </html>

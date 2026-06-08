@@ -23,7 +23,7 @@ $titlestring = "<div id='titleData' class='tab'>\n<table cellspacing='0'><thead>
 if (mysql_num_rows($titleresult) > 0){
   while($row = mysql_fetch_object($titleresult)){
   $titlestring .= '<tr>';
-	$titlestring .= "<td><a href='http://www.linkedin.com/search/fpsearch?title=" .$row->. "'>" .$row->. "</a></td>";
+	$titlestring .= "<td><a href='https://www.linkedin.com/search/fpsearch?title=" .$row->. "'>" .$row->. "</a></td>";
     $titlestring .= "<td>$".number_format($row->)."</td>";
 
     $titlestring .= "</tr>\n";
