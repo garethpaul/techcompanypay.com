@@ -45,3 +45,6 @@ should avoid exposing raw personal profile data.
 - Raw personal profile dumps
 - SQL built from untrusted input
 - Accuracy claims without sourced data and caveats
+
+This list is a roadmap guardrail, not a permanent rule.
+Strong user demand and strong technical rationale can change it.
