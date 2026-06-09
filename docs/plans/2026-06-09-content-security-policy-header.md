@@ -16,12 +16,16 @@ modernization.
 - Keep the policy compatible with the legacy inline snippets and HTTPS assets.
 - Restrict default fetches to the site and HTTPS origins.
 - Keep image loading constrained to the site, HTTPS, and data URLs.
+- Deny plugin object loads, third-party framing, and unexpected base/form
+  targets.
 - Add static coverage so the header remains present.
 
 ## Work Completed
 
 - Added the CSP header to `index.php`.
 - Added the same CSP header to `find.php`.
+- Included object, base URI, form action, and frame ancestor restrictions while
+  preserving the legacy HTTPS widgets and inline snippets.
 - Extended `tests/check-security-headers.php` to require the policy on both
   entry points.
 - Extended `tests/check-docs-plans.php` to require this completed plan.
