@@ -19,6 +19,7 @@ Priority:
 - Keep backend connection failures generic in user-facing responses
 - Maintain the disclaimer around data accuracy
 - Keep basic response security headers on PHP entry points
+- Prevent legacy pages from being embedded in third-party frames
 - Keep third-party assets on explicit HTTPS URLs
 - Keep completed maintenance plans under `docs/plans`
 - Treat old PHP `mysql_*` APIs and incomplete SQL as legacy risks
@@ -52,6 +53,7 @@ should avoid exposing raw personal profile data.
 - Database credentials
 - Raw personal profile dumps
 - SQL built from untrusted input
+- Third-party frame embedding without a documented rationale
 - Accuracy claims without sourced data and caveats
 
 This list is a roadmap guardrail, not a permanent rule.

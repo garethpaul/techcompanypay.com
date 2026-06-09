@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-09
+
+- Added `X-Frame-Options: DENY` to both PHP entry points.
+- Extended response-header checks to preserve the frame-deny guard.
+
 ## 2026-06-08
 
 - Replaced the protocol-relative Facebook script URL with explicit HTTPS and

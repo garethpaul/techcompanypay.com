@@ -9,6 +9,7 @@ foreach (array('index.php', 'find.php') as $entrypoint) {
     foreach (array(
         "header('Content-Type: text/html; charset=UTF-8')",
         "header('X-Content-Type-Options: nosniff')",
+        "header('X-Frame-Options: DENY')",
         "header('Referrer-Policy: strict-origin-when-cross-origin')",
     ) as $headerCall) {
         if (strpos($source, $headerCall) === false) {
