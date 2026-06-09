@@ -59,6 +59,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   legacy search endpoint.
 - Search endpoint checks also require non-scalar POST fields to normalize to
   empty strings before legacy query handling.
+- Search endpoint checks also require database salary values to be formatted
+  only after numeric validation, with invalid values displayed as `$0`.
 - `make check` also verifies that PHP entry points keep basic response security
   headers, including frame denial and a deny-by-default browser permissions
   policy for camera, microphone, and geolocation.
@@ -94,6 +96,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   normalization guard.
 - See `docs/plans/2026-06-09-scalar-post-inputs.md` for the scalar search POST
   normalization guard.
+- See `docs/plans/2026-06-09-salary-format-guard.md` for the salary output
+  formatting guard.
 - See `docs/plans/2026-06-08-explicit-https-assets.md` for the external asset
   URL guard.
 

@@ -19,6 +19,7 @@ Priority:
 - Keep backend connection failures generic in user-facing responses
 - Treat non-scalar request parameters as empty input before rendering
 - Treat non-scalar search POST fields as empty input before query handling
+- Format salary output only after numeric validation
 - Maintain the disclaimer around data accuracy
 - Keep basic response security headers on PHP entry points
 - Prevent legacy pages from being embedded in third-party frames

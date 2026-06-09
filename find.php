@@ -22,6 +22,10 @@ function tcp_linkedin_title($title) {
   return htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
 }
 
+function tcp_salary($value) {
+  return is_numeric($value) ? number_format((float) $value) : '0';
+}
+
 tcp_send_security_headers();
 
 if (HOST === '' || USER === '' || DB === '' || !function_exists('mysql_connect')) {
@@ -59,9 +63,9 @@ if ($titleresult && mysql_num_rows($titleresult) > 0){
   while($row = mysql_fetch_object($titleresult)){
     $title = isset($row->title) ? $row->title : '';
     $salary = isset($row->salary) ? $row->salary : 0;
-  $titlestring .= '<tr>';
+	$titlestring .= '<tr>';
 	$titlestring .= "<td><a href='https://www.linkedin.com/search/fpsearch?title=" . rawurlencode($title) . "'>" . tcp_linkedin_title($title) . "</a></td>";
-    $titlestring .= "<td>$".number_format($salary)."</td>";
+    $titlestring .= "<td>$".tcp_salary($salary)."</td>";
 
     $titlestring .= "</tr>\n";
   }
@@ -83,7 +87,7 @@ if ($groupresult && mysql_num_rows($groupresult) > 0){
     $salary = isset($row->salary) ? $row->salary : 0;
 	$groupstring .= '<tr>';
     $groupstring .= "<td>".htmlspecialchars($group, ENT_QUOTES, 'UTF-8')."</td>";
-    $groupstring .= "<td>$".number_format($salary)."</td>";
+    $groupstring .= "<td>$".tcp_salary($salary)."</td>";
     $groupstring .= "</tr>\n";
   }
   $groupstring .= '</tbody></table></div>';

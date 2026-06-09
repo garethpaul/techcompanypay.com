@@ -6,9 +6,14 @@ function fail($message) {
 
 $root = dirname(__DIR__);
 $canonical = $root . '/docs/plans/2026-06-08-techcompanypay-baseline.md';
+$salaryPlan = $root . '/docs/plans/2026-06-09-salary-format-guard.md';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
+}
+
+if (!is_file($salaryPlan)) {
+    fail('docs/plans/2026-06-09-salary-format-guard.md is missing');
 }
 
 $plans = glob($root . '/docs/plans/*.md');
@@ -21,6 +26,17 @@ foreach ($plans as $plan) {
     if (strpos($body, 'Status: Completed') === false || strpos($body, 'make check') === false) {
         fail(str_replace($root . '/', '', $plan) . ' must record completed status and make check verification');
     }
+}
+
+$findSource = file_get_contents($root . '/find.php');
+if (strpos($findSource, 'function tcp_salary($value)') === false) {
+    fail('find.php must centralize salary formatting');
+}
+if (strpos($findSource, 'is_numeric($value) ? number_format((float) $value) : \'0\'') === false) {
+    fail('find.php must format only numeric salary values');
+}
+if (strpos($findSource, 'number_format($salary)') !== false) {
+    fail('find.php must not pass raw database salary values to number_format');
 }
 
 echo "docs plans checks passed" . PHP_EOL;

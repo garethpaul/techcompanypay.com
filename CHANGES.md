@@ -2,6 +2,8 @@
 
 ## 2026-06-09
 
+- Added numeric validation for database salary formatting so malformed result
+  values render as `$0` instead of reaching `number_format()` directly.
 - Added a `Permissions-Policy` header to deny camera, microphone, and
   geolocation APIs from both PHP entry points.
 - Normalized non-scalar search POST fields to empty strings before legacy query
