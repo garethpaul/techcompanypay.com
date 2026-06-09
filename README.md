@@ -14,12 +14,14 @@ This README is based on the checked-in source, manifests, scripts, and repositor
 - `README.md` - project overview and local usage notes
 - `CHANGES.md` - maintenance history for PHP safety checks
 - `Makefile` - local verification entry points
+- `.gitignore` - local secret, dependency, log, and editor metadata ignores
 - `TODO` - legacy deployment and product notes
 - `docs/plans` - completed maintenance plans for the current baseline
 - `find.php` - legacy search endpoint
 - `index.php` - search page and sharing metadata
 - `plans` - historical implementation notes
 - `SECURITY.md` - security reporting and disclosure guidance
+- `scripts/check-baseline.sh` - repository maintenance baseline guard
 - `tests` - PHP syntax and output behavior checks
 - `VISION.md` - project direction and maintenance guardrails
 
@@ -66,6 +68,9 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   policy for camera, microphone, and geolocation. The header checks also require
   a Content-Security-Policy compatible with the legacy HTTPS widgets and inline
   snippets.
+- `scripts/check-baseline.sh` checks required project files, completed
+  docs-plan metadata, verification documentation, and local secret/editor
+  metadata hygiene.
 - `make check` rejects protocol-relative or insecure external script, image,
   and stylesheet references in the legacy page.
 - `make check` also requires completed canonical plans under `docs/plans`.
@@ -104,6 +109,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   formatting guard.
 - See `docs/plans/2026-06-08-explicit-https-assets.md` for the external asset
   URL guard.
+- See `docs/plans/2026-06-09-scripted-baseline-check.md` for the scripted
+  repository baseline guard and local secret/editor metadata ignores.
 
 ## Contributing
 

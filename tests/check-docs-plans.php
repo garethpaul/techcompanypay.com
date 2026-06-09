@@ -8,6 +8,7 @@ $root = dirname(__DIR__);
 $canonical = $root . '/docs/plans/2026-06-08-techcompanypay-baseline.md';
 $salaryPlan = $root . '/docs/plans/2026-06-09-salary-format-guard.md';
 $cspPlan = $root . '/docs/plans/2026-06-09-content-security-policy-header.md';
+$scriptedBaselinePlan = $root . '/docs/plans/2026-06-09-scripted-baseline-check.md';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
@@ -19,6 +20,15 @@ if (!is_file($salaryPlan)) {
 
 if (!is_file($cspPlan)) {
     fail('docs/plans/2026-06-09-content-security-policy-header.md is missing');
+}
+
+if (!is_file($scriptedBaselinePlan)) {
+    fail('docs/plans/2026-06-09-scripted-baseline-check.md is missing');
+}
+
+$makefile = file_get_contents($root . '/Makefile');
+if (strpos($makefile, 'scripts/check-baseline.sh') === false) {
+    fail('Makefile must run scripts/check-baseline.sh from make check');
 }
 
 $plans = glob($root . '/docs/plans/*.md');

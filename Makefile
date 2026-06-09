@@ -21,3 +21,4 @@ build: lint
 verify: lint test build
 
 check: verify
+	scripts/check-baseline.sh

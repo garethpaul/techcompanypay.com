@@ -4,6 +4,9 @@
 
 - Added a Content-Security-Policy header to both PHP entry points while
   preserving compatibility with legacy inline snippets and HTTPS widgets.
+- Added `scripts/check-baseline.sh` and `.gitignore` coverage for required
+  files, completed plan metadata, verification docs, and local secret/editor
+  metadata hygiene.
 - Added numeric validation for database salary formatting so malformed result
   values render as `$0` instead of reaching `number_format()` directly.
 - Added a `Permissions-Policy` header to deny camera, microphone, and

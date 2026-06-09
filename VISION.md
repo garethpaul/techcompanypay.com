@@ -27,6 +27,7 @@ Priority:
 - Constrain legacy page fetches with a Content-Security-Policy header
 - Keep third-party assets on explicit HTTPS URLs
 - Keep completed maintenance plans under `docs/plans`
+- Keep a scriptable baseline guard for required files and local metadata
 - Treat old PHP `mysql_*` APIs and incomplete SQL as legacy risks
 
 Next priorities:
