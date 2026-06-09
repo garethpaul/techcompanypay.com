@@ -27,4 +27,12 @@ if (strpos($html, '<script>alert(1)</script>') !== false) {
     fail('array query parameters should not render raw nested values');
 }
 
+$_GET = array(
+    'c' => str_repeat('A', 150),
+);
+
+if (tcp_get('c') !== str_repeat('A', 100)) {
+    fail('scalar query parameters should be bounded before rendering or sharing');
+}
+
 echo "index scalar input checks passed" . PHP_EOL;

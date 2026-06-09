@@ -2,6 +2,8 @@
 
 ## 2026-06-09
 
+- Bounded scalar query-string values before rendering or sharing them, with PHP
+  regression coverage and static validation.
 - Added a Content-Security-Policy header to both PHP entry points while
   preserving compatibility with legacy inline snippets and HTTPS widgets.
 - Added `scripts/check-baseline.sh` and `.gitignore` coverage for required

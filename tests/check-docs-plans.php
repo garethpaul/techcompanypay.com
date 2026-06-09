@@ -9,6 +9,7 @@ $canonical = $root . '/docs/plans/2026-06-08-techcompanypay-baseline.md';
 $salaryPlan = $root . '/docs/plans/2026-06-09-salary-format-guard.md';
 $cspPlan = $root . '/docs/plans/2026-06-09-content-security-policy-header.md';
 $scriptedBaselinePlan = $root . '/docs/plans/2026-06-09-scripted-baseline-check.md';
+$queryLengthPlan = $root . '/docs/plans/2026-06-09-query-length-guard.md';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
@@ -24,6 +25,10 @@ if (!is_file($cspPlan)) {
 
 if (!is_file($scriptedBaselinePlan)) {
     fail('docs/plans/2026-06-09-scripted-baseline-check.md is missing');
+}
+
+if (!is_file($queryLengthPlan)) {
+    fail('docs/plans/2026-06-09-query-length-guard.md is missing');
 }
 
 $makefile = file_get_contents($root . '/Makefile');
@@ -52,6 +57,11 @@ if (strpos($findSource, 'is_numeric($value) ? number_format((float) $value) : \'
 }
 if (strpos($findSource, 'number_format($salary)') !== false) {
     fail('find.php must not pass raw database salary values to number_format');
+}
+
+$indexSource = file_get_contents($root . '/index.php');
+if (strpos($indexSource, 'substr((string) $_GET[$key], 0, 100)') === false) {
+    fail('index.php must bound scalar query values before rendering or sharing');
 }
 
 echo "docs plans checks passed" . PHP_EOL;

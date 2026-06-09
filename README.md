@@ -59,6 +59,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - `make check` runs PHP syntax checks, query-escaping output tests,
   scalar-safe query input checks, and a fail-closed check for the unconfigured
   legacy search endpoint.
+- Query-string values rendered into the page or share metadata are bounded
+  before escaping so long reflected inputs do not expand the response.
 - Search endpoint checks also require non-scalar POST fields to normalize to
   empty strings before legacy query handling.
 - Search endpoint checks also require database salary values to be formatted
@@ -103,6 +105,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   Content-Security-Policy response header guard.
 - See `docs/plans/2026-06-09-scalar-query-inputs.md` for the scalar query
   normalization guard.
+- See `docs/plans/2026-06-09-query-length-guard.md` for the bounded query
+  string input guard.
 - See `docs/plans/2026-06-09-scalar-post-inputs.md` for the scalar search POST
   normalization guard.
 - See `docs/plans/2026-06-09-salary-format-guard.md` for the salary output

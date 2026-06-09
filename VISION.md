@@ -18,6 +18,7 @@ Priority:
 - Keep database credentials empty and out of source control
 - Keep backend connection failures generic in user-facing responses
 - Treat non-scalar request parameters as empty input before rendering
+- Bound reflected query input length before rendering or sharing
 - Treat non-scalar search POST fields as empty input before query handling
 - Format salary output only after numeric validation
 - Maintain the disclaimer around data accuracy
