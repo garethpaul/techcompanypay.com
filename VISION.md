@@ -22,6 +22,7 @@ Priority:
 - Maintain the disclaimer around data accuracy
 - Keep basic response security headers on PHP entry points
 - Prevent legacy pages from being embedded in third-party frames
+- Deny unused browser device APIs from PHP entry points
 - Keep third-party assets on explicit HTTPS URLs
 - Keep completed maintenance plans under `docs/plans`
 - Treat old PHP `mysql_*` APIs and incomplete SQL as legacy risks

@@ -60,7 +60,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - Search endpoint checks also require non-scalar POST fields to normalize to
   empty strings before legacy query handling.
 - `make check` also verifies that PHP entry points keep basic response security
-  headers, including frame denial.
+  headers, including frame denial and a deny-by-default browser permissions
+  policy for camera, microphone, and geolocation.
 - `make check` rejects protocol-relative or insecure external script, image,
   and stylesheet references in the legacy page.
 - `make check` also requires completed canonical plans under `docs/plans`.
@@ -87,6 +88,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   header guard.
 - See `docs/plans/2026-06-09-frame-options-header.md` for the frame-deny
   response header guard.
+- See `docs/plans/2026-06-09-permissions-policy-header.md` for the browser
+  permissions policy guard.
 - See `docs/plans/2026-06-09-scalar-query-inputs.md` for the scalar query
   normalization guard.
 - See `docs/plans/2026-06-09-scalar-post-inputs.md` for the scalar search POST

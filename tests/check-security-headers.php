@@ -11,6 +11,7 @@ foreach (array('index.php', 'find.php') as $entrypoint) {
         "header('X-Content-Type-Options: nosniff')",
         "header('X-Frame-Options: DENY')",
         "header('Referrer-Policy: strict-origin-when-cross-origin')",
+        "header('Permissions-Policy: camera=(), microphone=(), geolocation=()')",
     ) as $headerCall) {
         if (strpos($source, $headerCall) === false) {
             fail($entrypoint . ' must send ' . $headerCall);
