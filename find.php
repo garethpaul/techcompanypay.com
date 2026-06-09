@@ -14,7 +14,7 @@ function tcp_send_security_headers() {
 }
 
 function tcp_post_value($key) {
-  return isset($_POST[$key]) ? strip_tags(substr($_POST[$key], 0, 100)) : '';
+  return isset($_POST[$key]) && is_scalar($_POST[$key]) ? strip_tags(substr((string) $_POST[$key], 0, 100)) : '';
 }
 
 function tcp_linkedin_title($title) {

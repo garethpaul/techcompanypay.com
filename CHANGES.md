@@ -2,6 +2,8 @@
 
 ## 2026-06-09
 
+- Normalized non-scalar search POST fields to empty strings before legacy query
+  handling.
 - Normalized non-scalar index query parameters to empty strings before
   rendering or share URL generation.
 - Added a regression check that treats PHP warnings from array query inputs as
