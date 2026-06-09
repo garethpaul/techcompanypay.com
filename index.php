@@ -1,6 +1,6 @@
 <?php
 function tcp_get($key) {
-	return isset($_GET[$key]) ? $_GET[$key] : '';
+	return isset($_GET[$key]) && is_scalar($_GET[$key]) ? (string) $_GET[$key] : '';
 }
 
 function tcp_html($value) {

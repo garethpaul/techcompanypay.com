@@ -2,6 +2,10 @@
 
 ## 2026-06-09
 
+- Normalized non-scalar index query parameters to empty strings before
+  rendering or share URL generation.
+- Added a regression check that treats PHP warnings from array query inputs as
+  failures.
 - Added `X-Frame-Options: DENY` to both PHP entry points.
 - Extended response-header checks to preserve the frame-deny guard.
 

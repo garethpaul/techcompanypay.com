@@ -17,6 +17,7 @@ Priority:
 - Preserve the search-page and result-endpoint intent
 - Keep database credentials empty and out of source control
 - Keep backend connection failures generic in user-facing responses
+- Treat non-scalar request parameters as empty input before rendering
 - Maintain the disclaimer around data accuracy
 - Keep basic response security headers on PHP entry points
 - Prevent legacy pages from being embedded in third-party frames
