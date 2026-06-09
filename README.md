@@ -63,7 +63,9 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   only after numeric validation, with invalid values displayed as `$0`.
 - `make check` also verifies that PHP entry points keep basic response security
   headers, including frame denial and a deny-by-default browser permissions
-  policy for camera, microphone, and geolocation.
+  policy for camera, microphone, and geolocation. The header checks also require
+  a Content-Security-Policy compatible with the legacy HTTPS widgets and inline
+  snippets.
 - `make check` rejects protocol-relative or insecure external script, image,
   and stylesheet references in the legacy page.
 - `make check` also requires completed canonical plans under `docs/plans`.
@@ -92,6 +94,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   response header guard.
 - See `docs/plans/2026-06-09-permissions-policy-header.md` for the browser
   permissions policy guard.
+- See `docs/plans/2026-06-09-content-security-policy-header.md` for the
+  Content-Security-Policy response header guard.
 - See `docs/plans/2026-06-09-scalar-query-inputs.md` for the scalar query
   normalization guard.
 - See `docs/plans/2026-06-09-scalar-post-inputs.md` for the scalar search POST

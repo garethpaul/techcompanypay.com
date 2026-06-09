@@ -24,6 +24,7 @@ Priority:
 - Keep basic response security headers on PHP entry points
 - Prevent legacy pages from being embedded in third-party frames
 - Deny unused browser device APIs from PHP entry points
+- Constrain legacy page fetches with a Content-Security-Policy header
 - Keep third-party assets on explicit HTTPS URLs
 - Keep completed maintenance plans under `docs/plans`
 - Treat old PHP `mysql_*` APIs and incomplete SQL as legacy risks
@@ -59,6 +60,7 @@ should avoid exposing raw personal profile data.
 - SQL built from untrusted input
 - Non-scalar request values reaching legacy query construction
 - Third-party frame embedding without a documented rationale
+- Removing Content-Security-Policy without a replacement browser boundary
 - Accuracy claims without sourced data and caveats
 
 This list is a roadmap guardrail, not a permanent rule.

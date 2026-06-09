@@ -14,6 +14,7 @@ function tcp_send_security_headers() {
 		header('X-Frame-Options: DENY');
 		header('Referrer-Policy: strict-origin-when-cross-origin');
 		header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+		header("Content-Security-Policy: default-src 'self' https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' https: data:; frame-src https:; connect-src 'self'");
 	}
 }
 

@@ -7,6 +7,7 @@ function fail($message) {
 $root = dirname(__DIR__);
 $canonical = $root . '/docs/plans/2026-06-08-techcompanypay-baseline.md';
 $salaryPlan = $root . '/docs/plans/2026-06-09-salary-format-guard.md';
+$cspPlan = $root . '/docs/plans/2026-06-09-content-security-policy-header.md';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
@@ -14,6 +15,10 @@ if (!is_file($canonical)) {
 
 if (!is_file($salaryPlan)) {
     fail('docs/plans/2026-06-09-salary-format-guard.md is missing');
+}
+
+if (!is_file($cspPlan)) {
+    fail('docs/plans/2026-06-09-content-security-policy-header.md is missing');
 }
 
 $plans = glob($root . '/docs/plans/*.md');
