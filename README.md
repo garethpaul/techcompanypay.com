@@ -58,6 +58,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   fail-closed check for the unconfigured legacy search endpoint.
 - `make check` also verifies that PHP entry points keep basic response security
   headers.
+- `make check` rejects protocol-relative or insecure external script, image,
+  and stylesheet references in the legacy page.
 - `make check` also requires completed canonical plans under `docs/plans`.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
@@ -80,6 +82,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   search safety baseline.
 - See `docs/plans/2026-06-08-response-security-headers.md` for the response
   header guard.
+- See `docs/plans/2026-06-08-explicit-https-assets.md` for the external asset
+  URL guard.
 
 ## Contributing
 

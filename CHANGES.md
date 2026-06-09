@@ -2,6 +2,8 @@
 
 ## 2026-06-08
 
+- Replaced the protocol-relative Facebook script URL with explicit HTTPS and
+  added external asset URL checks.
 - Added explicit UTF-8 content type, `nosniff`, and referrer-policy headers for
   PHP entry points with static verification.
 - Added `make check` as the shared repository verification alias.
