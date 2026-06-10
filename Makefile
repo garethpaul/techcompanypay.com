@@ -1,28 +1,30 @@
 .PHONY: build check lint test verify
 
 PHP ?= php
+NODE ?= node
+ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 lint:
-	$(PHP) -l index.php
-	$(PHP) -l find.php
-	node --check assets/app.js
+	$(PHP) -l "$(ROOT)/index.php"
+	$(PHP) -l "$(ROOT)/find.php"
+	$(NODE) --check "$(ROOT)/assets/app.js"
 
 test:
-	$(PHP) tests/check-index-escaping.php
-	$(PHP) tests/check-index-scalar-inputs.php
-	$(PHP) tests/check-find-scalar-inputs.php
-	$(PHP) tests/check-find-salary-format.php
-	$(PHP) tests/check-find-fail-closed.php
-	$(PHP) tests/check-security-headers.php
-	$(PHP) tests/check-external-assets.php
-	$(PHP) tests/check-local-search.php
-	node tests/check-local-search.js
-	$(PHP) tests/check-docs-plans.php
-	$(PHP) tests/check-ci-workflow.php
+	$(PHP) "$(ROOT)/tests/check-index-escaping.php"
+	$(PHP) "$(ROOT)/tests/check-index-scalar-inputs.php"
+	$(PHP) "$(ROOT)/tests/check-find-scalar-inputs.php"
+	$(PHP) "$(ROOT)/tests/check-find-salary-format.php"
+	$(PHP) "$(ROOT)/tests/check-find-fail-closed.php"
+	$(PHP) "$(ROOT)/tests/check-security-headers.php"
+	$(PHP) "$(ROOT)/tests/check-external-assets.php"
+	$(PHP) "$(ROOT)/tests/check-local-search.php"
+	$(NODE) "$(ROOT)/tests/check-local-search.js"
+	$(PHP) "$(ROOT)/tests/check-docs-plans.php"
+	$(PHP) "$(ROOT)/tests/check-ci-workflow.php"
 
 build: lint
 
 verify: lint test build
 
 check: verify
-	scripts/check-baseline.sh
+	"$(ROOT)/scripts/check-baseline.sh"

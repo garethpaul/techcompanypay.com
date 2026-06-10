@@ -9,10 +9,16 @@ if ($workflow === false) {
 
 $contracts = array(
     "permissions:\n  contents: read",
+    'concurrency:',
+    'cancel-in-progress: true',
+    'runs-on: ubuntu-24.04',
     'timeout-minutes: 10',
-    "php-version: ['8.2', '8.4']",
+    "php-version: ['8.2', '8.4', '8.5']",
     'fail-fast: false',
+    'workflow_dispatch:',
     'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10',
+    'actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e',
+    "node-version: '24'",
     'shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240',
     'run: make check',
 );

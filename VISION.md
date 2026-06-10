@@ -30,6 +30,7 @@ Priority:
 - Constrain legacy page fetches with a Content-Security-Policy header
 - Keep the page render and runtime independent of third-party assets
 - Keep completed maintenance plans under `docs/plans`
+- Keep fixed-runner PHP and Node verification explicit in GitHub Actions
 - Keep a scriptable baseline guard for required files and local metadata
 - Treat old PHP `mysql_*` APIs and incomplete SQL as legacy risks
 

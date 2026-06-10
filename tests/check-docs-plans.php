@@ -10,6 +10,7 @@ $salaryPlan = $root . '/docs/plans/2026-06-09-salary-format-guard.md';
 $cspPlan = $root . '/docs/plans/2026-06-09-content-security-policy-header.md';
 $scriptedBaselinePlan = $root . '/docs/plans/2026-06-09-scripted-baseline-check.md';
 $queryLengthPlan = $root . '/docs/plans/2026-06-09-query-length-guard.md';
+$toolchainPlan = $root . '/docs/plans/2026-06-10-deterministic-toolchains.md';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
@@ -31,9 +32,23 @@ if (!is_file($queryLengthPlan)) {
     fail('docs/plans/2026-06-09-query-length-guard.md is missing');
 }
 
+if (!is_file($toolchainPlan)) {
+    fail('docs/plans/2026-06-10-deterministic-toolchains.md is missing');
+}
+
 $makefile = file_get_contents($root . '/Makefile');
 if (strpos($makefile, 'scripts/check-baseline.sh') === false) {
     fail('Makefile must run scripts/check-baseline.sh from make check');
+}
+foreach (array(
+    'ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))',
+    'NODE ?= node',
+    '"$(ROOT)/assets/app.js"',
+    '"$(ROOT)/tests/check-local-search.js"',
+) as $contract) {
+    if (strpos($makefile, $contract) === false) {
+        fail('Makefile must keep root-independent tool contract: ' . $contract);
+    }
 }
 
 $plans = glob($root . '/docs/plans/*.md');

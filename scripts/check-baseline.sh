@@ -34,6 +34,7 @@ for path in \
 	"tests/check-local-search.js" \
   "tests/check-security-headers.php" \
 	"docs/plans/2026-06-10-local-search-and-ci.md" \
+	"docs/plans/2026-06-10-deterministic-toolchains.md" \
   "tests/check-ci-workflow.php" \
   "docs/plans/2026-06-10-php-ci-baseline.md" \
   "docs/plans/2026-06-08-techcompanypay-baseline.md" \
