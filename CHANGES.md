@@ -1,5 +1,20 @@
 # Changes
 
+## 2026-06-10
+
+- Added least-privilege GitHub Actions verification on PHP 8.2 and 8.4 with
+  immutable Node 24 action references.
+- Added regression coverage for the workflow matrix, timeout, action pins,
+  permissions, and shared `make check` command.
+- Restored the primary salary search with bounded, same-origin JavaScript and a
+  functional native form fallback.
+- Replaced unreachable remote runtime assets with repository-owned JavaScript
+  and responsive CSS.
+- Removed obsolete sharing and analytics scripts, then restricted scripts and
+  styles to same-origin resources with regression coverage.
+- Extended the existing PHP CI matrix with JavaScript syntax and local-search
+  contract checks through `make check`.
+
 ## 2026-06-09
 
 - Bounded scalar query-string values before rendering or sharing them, with PHP

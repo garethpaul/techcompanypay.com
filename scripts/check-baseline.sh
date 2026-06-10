@@ -18,16 +18,24 @@ require_file() {
 for path in \
   ".gitignore" \
   "CHANGES.md" \
+  ".github/workflows/check.yml" \
   "Makefile" \
   "README.md" \
   "SECURITY.md" \
   "VISION.md" \
   "TODO" \
+	"assets/app.css" \
+	"assets/app.js" \
   "find.php" \
   "index.php" \
   "tests/check-docs-plans.php" \
-  "tests/check-external-assets.php" \
+	"tests/check-external-assets.php" \
+	"tests/check-local-search.php" \
+	"tests/check-local-search.js" \
   "tests/check-security-headers.php" \
+	"docs/plans/2026-06-10-local-search-and-ci.md" \
+  "tests/check-ci-workflow.php" \
+  "docs/plans/2026-06-10-php-ci-baseline.md" \
   "docs/plans/2026-06-08-techcompanypay-baseline.md" \
   "docs/plans/2026-06-09-scripted-baseline-check.md" \
   "scripts/check-baseline.sh"; do

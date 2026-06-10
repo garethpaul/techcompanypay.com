@@ -5,9 +5,12 @@
 
 ## Overview
 
-`garethpaul/techcompanypay.com` is a public sample, documentation, or utility project. TechCompanyPay.com repository
+`garethpaul/techcompanypay.com` is an archived salary-search prototype for
+technology companies and locations. It preserves the original PHP demo while
+keeping its public-data disclaimer and legacy deployment constraints explicit.
 
-This README is based on the checked-in source, manifests, scripts, and repository metadata on the `master` branch. The project language mix found during review was: PHP (2).
+The maintained surface uses PHP, repository-owned JavaScript and CSS, shell
+verification, and PHP contract tests.
 
 ## Repository Contents
 
@@ -16,6 +19,7 @@ This README is based on the checked-in source, manifests, scripts, and repositor
 - `Makefile` - local verification entry points
 - `.gitignore` - local secret, dependency, log, and editor metadata ignores
 - `TODO` - legacy deployment and product notes
+- `assets` - repository-owned browser JavaScript and responsive styles
 - `docs/plans` - completed maintenance plans for the current baseline
 - `find.php` - legacy search endpoint
 - `index.php` - search page and sharing metadata
@@ -27,10 +31,10 @@ This README is based on the checked-in source, manifests, scripts, and repositor
 
 Additional scan context:
 
-- Source directories: no top-level source directories detected
+- Source directories: `assets`, `scripts`, and `tests`
 - Dependency and build manifests: none detected
-- Entry points or build surfaces: none detected
-- Test-looking files: tests/check-find-fail-closed.php, tests/check-index-escaping.php
+- Entry points: `index.php` and `find.php`
+- Verification surface: `Makefile`, `scripts/check-baseline.sh`, and `tests/*.php`
 
 ## Getting Started
 
@@ -38,6 +42,8 @@ Additional scan context:
 
 - Git
 - PHP CLI for local syntax and output checks
+- Node.js 18 or newer for JavaScript syntax validation
+- PHP 8.2 or 8.4 for parity with hosted verification
 
 ### Setup
 
@@ -46,19 +52,24 @@ git clone https://github.com/garethpaul/techcompanypay.com.git
 cd techcompanypay.com
 ```
 
-The setup commands above are derived from repository files. Legacy mobile, Python, or JavaScript samples may require older SDKs or package versions than a modern workstation uses by default.
-
 ## Running or Using the Project
 
-- Serve `index.php` with a PHP-capable web server for the legacy demo page.
+- Start a local server with `php -S 127.0.0.1:8000`, then open
+  `http://127.0.0.1:8000/`.
 - `find.php` is the legacy search endpoint and requires database constants to
   be configured before live use.
+- The search form submits directly to `find.php` without JavaScript and uses a
+  bounded same-origin asynchronous request when modern browser APIs are
+  available.
 
 ## Testing and Verification
 
 - `make check` runs PHP syntax checks, query-escaping output tests,
   scalar-safe query input checks, and a fail-closed check for the unconfigured
-  legacy search endpoint.
+  legacy search endpoint. It also validates the local browser script with Node
+  and executes dependency-free search behavior coverage for fallback,
+  failures, input bounds, and out-of-order responses. Static contracts enforce
+  local assets, CSP, and CI workflow boundaries.
 - Query-string values rendered into the page or share metadata are bounded
   before escaping so long reflected inputs do not expand the response.
 - Search endpoint checks also require non-scalar POST fields to normalize to
@@ -68,20 +79,27 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - `make check` also verifies that PHP entry points keep basic response security
   headers, including frame denial and a deny-by-default browser permissions
   policy for camera, microphone, and geolocation. The header checks also require
-  a Content-Security-Policy compatible with the legacy HTTPS widgets and inline
-  snippets.
+  a Content-Security-Policy that limits executable scripts and styles to
+  repository-owned same-origin assets.
 - `scripts/check-baseline.sh` checks required project files, completed
   docs-plan metadata, verification documentation, and local secret/editor
   metadata hygiene.
-- `make check` rejects protocol-relative or insecure external script, image,
-  and stylesheet references in the legacy page.
+- `make check` rejects obsolete or remote runtime scripts plus
+  protocol-relative and insecure external asset references.
 - `make check` also requires completed canonical plans under `docs/plans`.
+- GitHub Actions runs the same `make check` gate on PHP 8.2 and 8.4 with
+  read-only permissions, bounded jobs, and immutable action pins.
+- Narrow targets are available as `make lint`, `make test`, `make build`, and
+  `make verify`.
 
-When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
+The browser search can be exercised without database credentials; the
+unconfigured endpoint intentionally returns `No matches!`.
 
 ## Configuration and Secrets
 
-- No required secret or credential file was identified in the repository scan. If you add integrations later, keep secrets out of git.
+- Live result queries require the database constants at the top of `find.php`.
+  Keep real values in an ignored local configuration mechanism if the archived
+  site is revived; do not commit credentials.
 
 ## Security and Privacy Notes
 
@@ -115,6 +133,11 @@ When the required SDK or runtime is unavailable, use static checks and source re
   URL guard.
 - See `docs/plans/2026-06-09-scripted-baseline-check.md` for the scripted
   repository baseline guard and local secret/editor metadata ignores.
+- See `docs/plans/2026-06-10-local-search-and-ci.md` for the self-contained
+  browser runtime, progressive form fallback, and stricter script policy.
+- The legacy `mysql_*` database API and intentionally blank SQL statements are
+  not production-ready. A revival should migrate to PDO or mysqli with
+  parameterized queries before adding real credentials or data.
 
 ## Contributing
 

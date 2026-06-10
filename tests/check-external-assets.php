@@ -24,8 +24,31 @@ if (preg_match('/\bjs\.src\s*=\s*[\'"]http:\/\//i', $source)) {
     fail('index.php dynamic script URLs must not use insecure HTTP');
 }
 
-if (strpos($source, 'https://connect.facebook.net/en_US/all.js#xfbml=1') === false) {
-    fail('index.php must load the Facebook widget over explicit HTTPS');
+foreach (array(
+    'jquery-1.6.2.min.js',
+    'core2.js',
+    'd2dixsj1sor9iw.cloudfront.net',
+    'connect.facebook.net',
+    'apis.google.com/js/plusone.js',
+    'statcounter.com/counter',
+) as $obsoleteAsset) {
+    if (strpos($source, $obsoleteAsset) !== false) {
+        fail('index.php must not load obsolete runtime asset: ' . $obsoleteAsset);
+    }
+}
+
+foreach (array('href="assets/app.css"', 'src="assets/app.js"') as $localAsset) {
+    if (strpos($source, $localAsset) === false) {
+        fail('index.php must load local runtime asset: ' . $localAsset);
+    }
+}
+
+if (preg_match('/<script(?![^>]*\bsrc=)[^>]*>/i', $source)) {
+    fail('index.php must not contain inline scripts');
+}
+
+if (preg_match('/<script[^>]+src=[\'\"]https?:\/\//i', $source)) {
+    fail('index.php must not load remote scripts');
 }
 
 echo "external asset checks passed" . PHP_EOL;
