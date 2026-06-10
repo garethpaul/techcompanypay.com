@@ -11,6 +11,7 @@ $cspPlan = $root . '/docs/plans/2026-06-09-content-security-policy-header.md';
 $scriptedBaselinePlan = $root . '/docs/plans/2026-06-09-scripted-baseline-check.md';
 $queryLengthPlan = $root . '/docs/plans/2026-06-09-query-length-guard.md';
 $toolchainPlan = $root . '/docs/plans/2026-06-10-deterministic-toolchains.md';
+$cityOnlyPlan = $root . '/docs/plans/2026-06-10-city-only-share-links.md';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
@@ -34,6 +35,10 @@ if (!is_file($queryLengthPlan)) {
 
 if (!is_file($toolchainPlan)) {
     fail('docs/plans/2026-06-10-deterministic-toolchains.md is missing');
+}
+
+if (!is_file($cityOnlyPlan)) {
+    fail('docs/plans/2026-06-10-city-only-share-links.md is missing');
 }
 
 $makefile = file_get_contents($root . '/Makefile');
@@ -77,6 +82,9 @@ if (strpos($findSource, 'number_format($salary)') !== false) {
 $indexSource = file_get_contents($root . '/index.php');
 if (strpos($indexSource, 'substr((string) $_GET[$key], 0, 100)') === false) {
     fail('index.php must bound scalar query values before rendering or sharing');
+}
+if (strpos($indexSource, 'http_build_query($params, \'\', \'&\', PHP_QUERY_RFC3986)') === false) {
+    fail('index.php must build share URLs from independent encoded filters');
 }
 
 echo "docs plans checks passed" . PHP_EOL;

@@ -61,6 +61,8 @@ cd techcompanypay.com
 - The search form submits directly to `find.php` without JavaScript and uses a
   bounded same-origin asynchronous request when modern browser APIs are
   available.
+- Shared URLs preserve company-only, city-only, or combined filters and
+  automatically run either kind of prefilled search in supported browsers.
 
 ## Testing and Verification
 
@@ -136,6 +138,8 @@ unconfigured endpoint intentionally returns `No matches!`.
   repository baseline guard and local secret/editor metadata ignores.
 - See `docs/plans/2026-06-10-local-search-and-ci.md` for the self-contained
   browser runtime, progressive form fallback, and stricter script policy.
+- See `docs/plans/2026-06-10-city-only-share-links.md` for independent share
+  filter encoding and city-only search bootstrap coverage.
 - The legacy `mysql_*` database API and intentionally blank SQL statements are
   not production-ready. A revival should migrate to PDO or mysqli with
   parameterized queries before adding real credentials or data.

@@ -32,9 +32,11 @@ for path in \
 	"tests/check-external-assets.php" \
 	"tests/check-local-search.php" \
 	"tests/check-local-search.js" \
+	"tests/check-share-url.php" \
   "tests/check-security-headers.php" \
 	"docs/plans/2026-06-10-local-search-and-ci.md" \
 	"docs/plans/2026-06-10-deterministic-toolchains.md" \
+	"docs/plans/2026-06-10-city-only-share-links.md" \
   "tests/check-ci-workflow.php" \
   "docs/plans/2026-06-10-php-ci-baseline.md" \
   "docs/plans/2026-06-08-techcompanypay-baseline.md" \

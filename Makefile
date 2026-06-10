@@ -12,6 +12,7 @@ lint:
 test:
 	$(PHP) "$(ROOT)/tests/check-index-escaping.php"
 	$(PHP) "$(ROOT)/tests/check-index-scalar-inputs.php"
+	$(PHP) "$(ROOT)/tests/check-share-url.php"
 	$(PHP) "$(ROOT)/tests/check-find-scalar-inputs.php"
 	$(PHP) "$(ROOT)/tests/check-find-salary-format.php"
 	$(PHP) "$(ROOT)/tests/check-find-fail-closed.php"

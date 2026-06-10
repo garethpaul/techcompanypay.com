@@ -85,7 +85,7 @@
     requestSearch();
   });
 
-  if (supportsAsyncSearch() && company.value.trim() !== '') {
+  if (supportsAsyncSearch() && (company.value.trim() !== '' || city.value.trim() !== '')) {
     requestSearch();
   }
 }());

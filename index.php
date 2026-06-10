@@ -19,11 +19,15 @@ function tcp_send_security_headers() {
 }
 
 function tcp_share_url($company, $city) {
-	$query = '';
+	$params = array();
 	if ($company !== '') {
-		$query = '?c=' . rawurlencode($company) . '&l=' . rawurlencode($city);
+		$params['c'] = $company;
 	}
-	return 'https://techcompanypay.com/' . $query;
+	if ($city !== '') {
+		$params['l'] = $city;
+	}
+	$query = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+	return 'https://techcompanypay.com/' . ($query === '' ? '' : '?' . $query);
 }
 
 tcp_send_security_headers();

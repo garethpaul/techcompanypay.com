@@ -2,6 +2,8 @@
 
 ## 2026-06-10
 
+- Preserved city-only filters in canonical share URLs and automatically ran
+  prefilled searches when either company or city is present.
 - Fixed GitHub Actions to Ubuntu 24.04, added explicit pinned Node 24 setup,
   and expanded PHP verification to 8.2, 8.4, and 8.5.
 - Added concurrency cancellation and made Makefile PHP/Node checks independent

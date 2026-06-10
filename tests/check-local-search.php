@@ -27,6 +27,7 @@ foreach (array(
     "requestController.abort()",
     "}, 10000)",
     "results.textContent = 'Search is temporarily unavailable. Please try again.'",
+    "company.value.trim() !== '' || city.value.trim() !== ''",
 ) as $contract) {
     if (strpos($scriptSource, $contract) === false) {
         fail('assets/app.js must keep search contract: ' . $contract);
