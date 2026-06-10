@@ -5,6 +5,7 @@ PHP ?= php
 lint:
 	$(PHP) -l index.php
 	$(PHP) -l find.php
+	node --check assets/app.js
 
 test:
 	$(PHP) tests/check-index-escaping.php
@@ -14,6 +15,8 @@ test:
 	$(PHP) tests/check-find-fail-closed.php
 	$(PHP) tests/check-security-headers.php
 	$(PHP) tests/check-external-assets.php
+	$(PHP) tests/check-local-search.php
+	node tests/check-local-search.js
 	$(PHP) tests/check-docs-plans.php
 	$(PHP) tests/check-ci-workflow.php
 
