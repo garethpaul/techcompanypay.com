@@ -38,6 +38,7 @@ Additional scan context:
 
 - Git
 - PHP CLI for local syntax and output checks
+- PHP 8.2 or 8.4 for parity with hosted verification
 
 ### Setup
 
@@ -76,6 +77,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - `make check` rejects protocol-relative or insecure external script, image,
   and stylesheet references in the legacy page.
 - `make check` also requires completed canonical plans under `docs/plans`.
+- GitHub Actions runs the same `make check` gate on PHP 8.2 and 8.4 with
+  read-only permissions, bounded jobs, and immutable action pins.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 

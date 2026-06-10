@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-06-10
+
+- Added least-privilege GitHub Actions verification on PHP 8.2 and 8.4.
+- Added regression coverage for the workflow matrix, timeout, action pins,
+  permissions, and shared `make check` command.
+
 ## 2026-06-09
 
 - Bounded scalar query-string values before rendering or sharing them, with PHP

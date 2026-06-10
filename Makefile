@@ -15,6 +15,7 @@ test:
 	$(PHP) tests/check-security-headers.php
 	$(PHP) tests/check-external-assets.php
 	$(PHP) tests/check-docs-plans.php
+	$(PHP) tests/check-ci-workflow.php
 
 build: lint
 

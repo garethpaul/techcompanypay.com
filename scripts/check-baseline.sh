@@ -18,6 +18,8 @@ require_file() {
 for path in \
   ".gitignore" \
   "CHANGES.md" \
+  "AGENTS.md" \
+  ".github/workflows/check.yml" \
   "Makefile" \
   "README.md" \
   "SECURITY.md" \
@@ -28,6 +30,8 @@ for path in \
   "tests/check-docs-plans.php" \
   "tests/check-external-assets.php" \
   "tests/check-security-headers.php" \
+  "tests/check-ci-workflow.php" \
+  "docs/plans/2026-06-10-php-ci-baseline.md" \
   "docs/plans/2026-06-08-techcompanypay-baseline.md" \
   "docs/plans/2026-06-09-scripted-baseline-check.md" \
   "scripts/check-baseline.sh"; do
