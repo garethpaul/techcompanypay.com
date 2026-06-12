@@ -19,7 +19,10 @@ foreach (array(
 
 foreach (array(
     "form.addEventListener('submit'",
+    "typeof window.AbortController === 'function'",
+    'var requestController = new window.AbortController();',
     "method: 'POST'",
+    'signal: requestController.signal',
     "window.fetch(form.action, options)",
     "company.value.slice(0, 100)",
     "city.value.slice(0, 100)",
@@ -31,6 +34,21 @@ foreach (array(
 ) as $contract) {
     if (strpos($scriptSource, $contract) === false) {
         fail('assets/app.js must keep search contract: ' . $contract);
+    }
+}
+
+if (strpos($scriptSource, "typeof window.AbortController === 'function' ?") !== false) {
+    fail('assets/app.js must not enable asynchronous search without guaranteed abort support');
+}
+
+$behaviorSource = file_get_contents(__DIR__ . '/check-local-search.js');
+foreach (array(
+    'missing AbortController should keep native submission',
+    'missing AbortController should not start an asynchronous submit',
+    'missing AbortController should not start a prefilled search',
+) as $contract) {
+    if (strpos($behaviorSource, $contract) === false) {
+        fail('tests/check-local-search.js must keep missing-abort coverage: ' . $contract);
     }
 }
 

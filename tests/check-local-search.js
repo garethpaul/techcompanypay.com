@@ -45,7 +45,7 @@ function createHarness(options) {
   var windowObject = {
     fetch: options.fetch,
     URLSearchParams: URLSearchParams,
-    AbortController: FakeAbortController,
+    AbortController: options.abortController === false ? undefined : FakeAbortController,
     setTimeout: function (handler) {
       timeoutHandler = handler;
       return 1;
@@ -158,6 +158,29 @@ async function run() {
 
   var fallbackHarness = createHarness({fetch: undefined});
   assert.strictEqual(fallbackHarness.submit(), false, 'unsupported browsers should keep the native form submission');
+
+  var missingAbortRequests = 0;
+  var missingAbortHarness = createHarness({
+    abortController: false,
+    fetch: function () {
+      missingAbortRequests += 1;
+      return deferred().promise;
+    }
+  });
+  assert.strictEqual(missingAbortHarness.submit(), false, 'missing AbortController should keep native submission');
+  assert.strictEqual(missingAbortRequests, 0, 'missing AbortController should not start an asynchronous submit');
+  assert.strictEqual(missingAbortHarness.elements.submitbsearch.disabled, false);
+
+  var missingAbortPrefillRequests = 0;
+  createHarness({
+    abortController: false,
+    company: 'OpenAI',
+    fetch: function () {
+      missingAbortPrefillRequests += 1;
+      return deferred().promise;
+    }
+  });
+  assert.strictEqual(missingAbortPrefillRequests, 0, 'missing AbortController should not start a prefilled search');
 
   var cityOnlyRequests = [];
   createHarness({

@@ -2,6 +2,8 @@
 
 ## 2026-06-12
 
+- Kept native form submission when abort support is unavailable so the
+  asynchronous search path always retains its bounded timeout lifecycle.
 - Disabled checkout credential persistence and made CI verification reject
   additional unreviewed workflow files.
 

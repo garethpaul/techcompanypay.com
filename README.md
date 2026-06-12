@@ -59,8 +59,8 @@ cd techcompanypay.com
 - `find.php` is the legacy search endpoint and requires database constants to
   be configured before live use.
 - The search form submits directly to `find.php` without JavaScript and uses a
-  bounded same-origin asynchronous request when modern browser APIs are
-  available.
+  bounded same-origin asynchronous request only when `fetch`, URL encoding,
+  and abort support are all available. Other browsers keep native submission.
 - Shared URLs preserve company-only, city-only, or combined filters and
   automatically run either kind of prefilled search in supported browsers.
 
@@ -70,8 +70,8 @@ cd techcompanypay.com
   scalar-safe query input checks, and a fail-closed check for the unconfigured
   legacy search endpoint. It also validates the local browser script with Node
   and executes dependency-free search behavior coverage for fallback,
-  failures, input bounds, and out-of-order responses. Static contracts enforce
-  local assets, CSP, and CI workflow boundaries.
+  missing abort support, failures, input bounds, and out-of-order responses.
+  Static contracts enforce local assets, CSP, and CI workflow boundaries.
 - Query-string values rendered into the page or share metadata are bounded
   before escaping so long reflected inputs do not expand the response.
 - Search endpoint checks also require non-scalar POST fields to normalize to

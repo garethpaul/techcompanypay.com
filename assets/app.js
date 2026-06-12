@@ -14,7 +14,9 @@
   }
 
   function supportsAsyncSearch() {
-    return typeof window.fetch === 'function' && typeof window.URLSearchParams === 'function';
+    return typeof window.fetch === 'function' &&
+      typeof window.URLSearchParams === 'function' &&
+      typeof window.AbortController === 'function';
   }
 
   function requestSearch() {
@@ -25,9 +27,8 @@
       activeRequest.abort();
     }
 
-    var requestController = typeof window.AbortController === 'function' ? new window.AbortController() : null;
+    var requestController = new window.AbortController();
     var requestTimedOut = false;
-    var requestTimeout = null;
     activeRequest = requestController;
     var body = new window.URLSearchParams();
     body.append('search_term', company.value.slice(0, 100));
@@ -39,15 +40,13 @@
     var options = {
       method: 'POST',
       body: body,
-      headers: {'X-Requested-With': 'XMLHttpRequest'}
+      headers: {'X-Requested-With': 'XMLHttpRequest'},
+      signal: requestController.signal
     };
-    if (requestController) {
-      options.signal = requestController.signal;
-      requestTimeout = window.setTimeout(function () {
-        requestTimedOut = true;
-        requestController.abort();
-      }, 10000);
-    }
+    var requestTimeout = window.setTimeout(function () {
+      requestTimedOut = true;
+      requestController.abort();
+    }, 10000);
 
     window.fetch(form.action, options)
       .then(function (response) {

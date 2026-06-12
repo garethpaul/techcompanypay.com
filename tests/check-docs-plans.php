@@ -13,6 +13,7 @@ $queryLengthPlan = $root . '/docs/plans/2026-06-09-query-length-guard.md';
 $toolchainPlan = $root . '/docs/plans/2026-06-10-deterministic-toolchains.md';
 $cityOnlyPlan = $root . '/docs/plans/2026-06-10-city-only-share-links.md';
 $credentialIsolationPlan = $root . '/docs/plans/2026-06-12-checkout-credential-isolation.md';
+$abortableSearchPlan = $root . '/docs/plans/2026-06-12-abortable-async-search.md';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
@@ -44,6 +45,10 @@ if (!is_file($cityOnlyPlan)) {
 
 if (!is_file($credentialIsolationPlan)) {
     fail('docs/plans/2026-06-12-checkout-credential-isolation.md is missing');
+}
+
+if (!is_file($abortableSearchPlan)) {
+    fail('docs/plans/2026-06-12-abortable-async-search.md is missing');
 }
 
 $makefile = file_get_contents($root . '/Makefile');
