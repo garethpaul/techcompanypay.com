@@ -91,7 +91,8 @@ cd techcompanypay.com
 - `make check` also requires completed canonical plans under `docs/plans`.
 - GitHub Actions runs the same `make check` gate on fixed Ubuntu 24.04 runners
   with Node 24 and PHP 8.2, 8.4, and 8.5, read-only permissions, bounded jobs,
-  concurrency cancellation, and immutable action pins.
+  concurrency cancellation, immutable action pins, credential-free checkout,
+  and one reviewed workflow file.
 - Narrow targets are available as `make lint`, `make test`, `make build`, and
   `make verify`.
 

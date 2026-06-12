@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-12
+
+- Disabled checkout credential persistence and made CI verification reject
+  additional unreviewed workflow files.
+
 ## 2026-06-10
 
 - Preserved city-only filters in canonical share URLs and automatically ran

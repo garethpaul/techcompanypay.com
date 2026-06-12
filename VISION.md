@@ -32,6 +32,7 @@ Priority:
 - Keep the page render and runtime independent of third-party assets
 - Keep completed maintenance plans under `docs/plans`
 - Keep fixed-runner PHP and Node verification explicit in GitHub Actions
+- Keep hosted checkout credential-free and the workflow surface singular
 - Keep a scriptable baseline guard for required files and local metadata
 - Treat old PHP `mysql_*` APIs and incomplete SQL as legacy risks
 

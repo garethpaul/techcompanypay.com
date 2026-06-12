@@ -31,6 +31,8 @@ Helpful reports include:
 - No primary dependency manifest was detected in the repository root. If dependencies are added later, include a manifest and prefer reproducible installation instructions.
 - GitHub Actions uses fixed Ubuntu 24.04 runners, pinned Node 24 setup, and a
   PHP 8.2/8.4/8.5 matrix with read-only repository permissions.
+- Checkout credentials are not persisted, and the repository contract rejects
+  additional unreviewed workflow files.
 
 ## Service and API Notes
 
