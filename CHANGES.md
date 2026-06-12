@@ -2,7 +2,14 @@
 
 ## 2026-06-10
 
-- Added least-privilege GitHub Actions verification on PHP 8.2 and 8.4.
+- Preserved city-only filters in canonical share URLs and automatically ran
+  prefilled searches when either company or city is present.
+- Fixed GitHub Actions to Ubuntu 24.04, added explicit pinned Node 24 setup,
+  and expanded PHP verification to 8.2, 8.4, and 8.5.
+- Added concurrency cancellation and made Makefile PHP/Node checks independent
+  of the caller's working directory.
+- Added least-privilege GitHub Actions verification on PHP 8.2 and 8.4 with
+  immutable Node 24 action references.
 - Added regression coverage for the workflow matrix, timeout, action pins,
   permissions, and shared `make check` command.
 - Restored the primary salary search with bounded, same-origin JavaScript and a

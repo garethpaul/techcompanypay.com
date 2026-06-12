@@ -31,8 +31,9 @@ browser runtime work began.
   policies.
 - Added executable browser-script coverage plus local-search and external-asset
   regression contracts.
-- Added a least-privilege PHP 8.2/8.4 CI matrix with immutable action pins, then
-  extended `make check` with JavaScript syntax and local-runtime contracts.
+- Added a least-privilege PHP 8.2/8.4 CI matrix with immutable Node 24 action
+  pins, then extended `make check` with JavaScript syntax and local-runtime
+  contracts.
 
 ## Verification
 

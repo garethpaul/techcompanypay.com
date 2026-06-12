@@ -159,6 +159,19 @@ async function run() {
   var fallbackHarness = createHarness({fetch: undefined});
   assert.strictEqual(fallbackHarness.submit(), false, 'unsupported browsers should keep the native form submission');
 
+  var cityOnlyRequests = [];
+  createHarness({
+    city: 'New York',
+    fetch: function (url, options) {
+      cityOnlyRequests.push({url: url, options: options});
+      return deferred().promise;
+    }
+  });
+  assert.strictEqual(cityOnlyRequests.length, 1, 'prefilled city-only links should search automatically');
+  assert.strictEqual(cityOnlyRequests[0].url, 'find.php');
+  assert.strictEqual(cityOnlyRequests[0].options.body.get('search_term'), '');
+  assert.strictEqual(cityOnlyRequests[0].options.body.get('city'), 'New York');
+
   console.log('local search behavior checks passed');
 }
 

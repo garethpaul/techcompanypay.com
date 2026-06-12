@@ -42,8 +42,8 @@ Additional scan context:
 
 - Git
 - PHP CLI for local syntax and output checks
-- Node.js 18 or newer for JavaScript syntax validation
-- PHP 8.2 or 8.4 for parity with hosted verification
+- Node.js 24 for parity with hosted JavaScript verification
+- PHP 8.2, 8.4, or 8.5 for parity with hosted verification
 
 ### Setup
 
@@ -61,6 +61,8 @@ cd techcompanypay.com
 - The search form submits directly to `find.php` without JavaScript and uses a
   bounded same-origin asynchronous request when modern browser APIs are
   available.
+- Shared URLs preserve company-only, city-only, or combined filters and
+  automatically run either kind of prefilled search in supported browsers.
 
 ## Testing and Verification
 
@@ -87,8 +89,9 @@ cd techcompanypay.com
 - `make check` rejects obsolete or remote runtime scripts plus
   protocol-relative and insecure external asset references.
 - `make check` also requires completed canonical plans under `docs/plans`.
-- GitHub Actions runs the same `make check` gate on PHP 8.2 and 8.4 with
-  read-only permissions, bounded jobs, and immutable action pins.
+- GitHub Actions runs the same `make check` gate on fixed Ubuntu 24.04 runners
+  with Node 24 and PHP 8.2, 8.4, and 8.5, read-only permissions, bounded jobs,
+  concurrency cancellation, and immutable action pins.
 - Narrow targets are available as `make lint`, `make test`, `make build`, and
   `make verify`.
 
@@ -135,6 +138,8 @@ unconfigured endpoint intentionally returns `No matches!`.
   repository baseline guard and local secret/editor metadata ignores.
 - See `docs/plans/2026-06-10-local-search-and-ci.md` for the self-contained
   browser runtime, progressive form fallback, and stricter script policy.
+- See `docs/plans/2026-06-10-city-only-share-links.md` for independent share
+  filter encoding and city-only search bootstrap coverage.
 - The legacy `mysql_*` database API and intentionally blank SQL statements are
   not production-ready. A revival should migrate to PDO or mysqli with
   parameterized queries before adding real credentials or data.

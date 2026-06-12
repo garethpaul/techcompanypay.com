@@ -22,6 +22,7 @@ Priority:
 - Treat non-scalar search POST fields as empty input before query handling
 - Format salary output only after numeric validation
 - Keep the primary search functional without third-party JavaScript
+- Preserve company-only and city-only filters in shared search URLs
 - Keep scripts and styles same-origin unless an external dependency is reviewed
 - Maintain the disclaimer around data accuracy
 - Keep basic response security headers on PHP entry points
@@ -30,6 +31,7 @@ Priority:
 - Constrain legacy page fetches with a Content-Security-Policy header
 - Keep the page render and runtime independent of third-party assets
 - Keep completed maintenance plans under `docs/plans`
+- Keep fixed-runner PHP and Node verification explicit in GitHub Actions
 - Keep a scriptable baseline guard for required files and local metadata
 - Treat old PHP `mysql_*` APIs and incomplete SQL as legacy risks
 

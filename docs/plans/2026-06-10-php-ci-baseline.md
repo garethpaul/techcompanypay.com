@@ -12,7 +12,7 @@ credentials.
 
 - Add a least-privilege GitHub Actions workflow with bounded execution time.
 - Verify the supported PHP 8.2 and 8.4 runtimes.
-- Pin third-party actions to immutable commit SHAs.
+- Pin Node 24-compatible third-party actions to immutable commit SHAs.
 - Add a PHP regression test for the workflow's permissions, matrix, timeout,
   action pins, and shared `make check` command.
 
@@ -21,4 +21,3 @@ credentials.
 - `make check`
 - Parse the workflow as YAML.
 - Confirm a negative workflow mutation is rejected by the contract test.
-
