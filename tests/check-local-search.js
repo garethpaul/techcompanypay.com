@@ -16,6 +16,20 @@ function deferred() {
   return {promise: promise, resolve: resolve, reject: reject};
 }
 
+function htmlResponse(html, contentType) {
+  return {
+    ok: true,
+    headers: {
+      get: function (name) {
+        return name.toLowerCase() === 'content-type' ? (contentType || 'text/html; charset=UTF-8') : null;
+      }
+    },
+    text: function () {
+      return Promise.resolve(html);
+    }
+  };
+}
+
 function createHarness(options) {
   var submitHandler = null;
   var timeoutHandler = null;
@@ -112,23 +126,13 @@ async function run() {
 
   harness.elements.search_term.value = 'OpenAI';
   harness.submit();
-  requests[1].response.resolve({
-    ok: true,
-    text: function () {
-      return Promise.resolve('<p>New result</p>');
-    }
-  });
+  requests[1].response.resolve(htmlResponse('<p>New result</p>', ' Text/HTML ; charset=UTF-8 '));
   await flushPromises();
   await flushPromises();
   assert.strictEqual(harness.elements.search_results.innerHTML, '<p>New result</p>');
   assert.strictEqual(harness.elements.submitbsearch.disabled, false);
 
-  requests[0].response.resolve({
-    ok: true,
-    text: function () {
-      return Promise.resolve('<p>Stale result</p>');
-    }
-  });
+  requests[0].response.resolve(htmlResponse('<p>Stale result</p>'));
   await flushPromises();
   await flushPromises();
   assert.strictEqual(harness.elements.search_results.innerHTML, '<p>New result</p>', 'stale responses must not overwrite newer results');
@@ -155,6 +159,64 @@ async function run() {
   await flushPromises();
   assert.strictEqual(timedOutHarness.elements.search_results.textContent, 'Search is temporarily unavailable. Please try again.');
   assert.strictEqual(timedOutHarness.elements.submitbsearch.disabled, false);
+
+  var exactLimitHtml = 'x'.repeat(256 * 1024);
+  var exactLimitHarness = createHarness({
+    fetch: function () {
+      return Promise.resolve(htmlResponse(exactLimitHtml));
+    }
+  });
+  exactLimitHarness.submit();
+  await flushPromises();
+  await flushPromises();
+  assert.strictEqual(exactLimitHarness.elements.search_results.innerHTML.length, 256 * 1024, 'response exactly at limit should render');
+
+  var oversizedHarness = createHarness({
+    fetch: function () {
+      return Promise.resolve(htmlResponse('x'.repeat((256 * 1024) + 1)));
+    }
+  });
+  oversizedHarness.submit();
+  await flushPromises();
+  await flushPromises();
+  assert.strictEqual(oversizedHarness.elements.search_results.innerHTML, '', 'oversized response should not render');
+  assert.strictEqual(oversizedHarness.elements.search_results.textContent, 'Search is temporarily unavailable. Please try again.');
+
+  var nonHtmlTextReads = 0;
+  var nonHtmlHarness = createHarness({
+    fetch: function () {
+      return Promise.resolve({
+        ok: true,
+        headers: {get: function () { return 'application/json'; }},
+        text: function () {
+          nonHtmlTextReads += 1;
+          return Promise.resolve('{}');
+        }
+      });
+    }
+  });
+  nonHtmlHarness.submit();
+  await flushPromises();
+  assert.strictEqual(nonHtmlTextReads, 0, 'non-HTML response should be rejected before reading its body');
+  assert.strictEqual(nonHtmlHarness.elements.search_results.textContent, 'Search is temporarily unavailable. Please try again.');
+
+  var missingTypeTextReads = 0;
+  var missingTypeHarness = createHarness({
+    fetch: function () {
+      return Promise.resolve({
+        ok: true,
+        headers: {get: function () { return null; }},
+        text: function () {
+          missingTypeTextReads += 1;
+          return Promise.resolve('<p>Unexpected</p>');
+        }
+      });
+    }
+  });
+  missingTypeHarness.submit();
+  await flushPromises();
+  assert.strictEqual(missingTypeTextReads, 0, 'missing content type should be rejected before reading its body');
+  assert.strictEqual(missingTypeHarness.elements.search_results.textContent, 'Search is temporarily unavailable. Please try again.');
 
   var fallbackHarness = createHarness({fetch: undefined});
   assert.strictEqual(fallbackHarness.submit(), false, 'unsupported browsers should keep the native form submission');

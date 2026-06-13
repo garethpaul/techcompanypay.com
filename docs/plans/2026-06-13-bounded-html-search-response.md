@@ -1,6 +1,6 @@
 # Bounded HTML Search Response
 
-## Status: Planned
+## Status: Completed
 
 ## Context
 
@@ -79,3 +79,29 @@ error state.
   the authoritative response contract for successful fragments.
 - A JavaScript string-length limit bounds DOM insertion size, not transport
   bytes; the 10-second abort remains the transport-lifetime bound.
+
+## Work Completed
+
+- Added a named 256 KiB search-response text limit.
+- Normalized the response `Content-Type` and rejected missing or non-HTML media
+  types before calling `response.text()`.
+- Rejected over-limit text before `innerHTML` while preserving exact-limit
+  acceptance, the latest-request guard, and the existing generic error state.
+- Added offline boundary and failure coverage plus fail-closed static contracts
+  and maintenance documentation.
+
+## Verification
+
+- JavaScript syntax and focused Node behavior checks passed.
+- PHP local-search contracts and documentation-plan syntax checks passed.
+- `git diff --check` passed before the full gate.
+- `make check` passed PHP and JavaScript syntax, all PHP/Node behavior and
+  contract checks, workflow policy, documentation plans, and the baseline
+  shell guard.
+- The same full gate passed from an external working directory.
+- Seven focused hostile mutation categories were rejected: removed or
+  hard-coded media-type validation, a raised limit, an off-by-one comparison,
+  size checking after DOM insertion, and removed oversized or non-HTML
+  regression coverage.
+- Plan-aware correctness, security-boundary, API-contract, testing, and
+  maintainability review found no remaining actionable issue.

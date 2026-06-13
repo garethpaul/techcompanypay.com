@@ -29,6 +29,9 @@ foreach (array(
     "requestNumber === latestRequest",
     "requestController.abort()",
     "}, 10000)",
+    'var MAX_SEARCH_RESPONSE_LENGTH = 256 * 1024;',
+    "responseContentType(response) !== 'text/html'",
+    'html.length > MAX_SEARCH_RESPONSE_LENGTH',
     "results.textContent = 'Search is temporarily unavailable. Please try again.'",
     "company.value.trim() !== '' || city.value.trim() !== ''",
 ) as $contract) {
@@ -46,9 +49,13 @@ foreach (array(
     'missing AbortController should keep native submission',
     'missing AbortController should not start an asynchronous submit',
     'missing AbortController should not start a prefilled search',
+    'response exactly at limit should render',
+    'oversized response should not render',
+    'non-HTML response should be rejected before reading its body',
+    'missing content type should be rejected before reading its body',
 ) as $contract) {
     if (strpos($behaviorSource, $contract) === false) {
-        fail('tests/check-local-search.js must keep missing-abort coverage: ' . $contract);
+        fail('tests/check-local-search.js must keep required behavior coverage: ' . $contract);
     }
 }
 

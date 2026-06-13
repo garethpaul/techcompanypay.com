@@ -45,6 +45,8 @@ Dependency updates should come from trusted package managers and should keep loc
 The browser search enhancement is enabled only when its request can be aborted
 and timed out. Browsers without `AbortController` retain native form submission
 instead of entering an unbounded asynchronous state.
+Successful async responses must also declare `text/html` and remain at or below
+256 KiB before the fragment can cross the `innerHTML` boundary.
 
 ## Safe Research Guidelines
 

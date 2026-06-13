@@ -60,7 +60,9 @@ cd techcompanypay.com
   be configured before live use.
 - The search form submits directly to `find.php` without JavaScript and uses a
   bounded same-origin asynchronous request only when `fetch`, URL encoding,
-  and abort support are all available. Other browsers keep native submission.
+  and abort support are all available. Async results must be `text/html` and no
+  larger than 256 KiB before DOM insertion. Other browsers keep native
+  submission.
 - Shared URLs preserve company-only, city-only, or combined filters and
   automatically run either kind of prefilled search in supported browsers.
 
@@ -70,7 +72,8 @@ cd techcompanypay.com
   scalar-safe query input checks, and a fail-closed check for the unconfigured
   legacy search endpoint. It also validates the local browser script with Node
   and executes dependency-free search behavior coverage for fallback,
-  missing abort support, failures, input bounds, and out-of-order responses.
+  missing abort support, failures, input bounds, bounded HTML responses, and
+  out-of-order responses.
   Static contracts enforce local assets, CSP, and CI workflow boundaries.
 - Query-string values rendered into the page or share metadata are bounded
   before escaping so long reflected inputs do not expand the response.

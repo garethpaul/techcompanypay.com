@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-13
+
+- Required async salary-search responses to declare `text/html` and remain at
+  or below 256 KiB before insertion into the live results region.
+
 ## 2026-06-12
 
 - Kept native form submission when abort support is unavailable so the
