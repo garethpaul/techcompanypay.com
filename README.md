@@ -61,8 +61,9 @@ cd techcompanypay.com
 - The search form submits directly to `find.php` without JavaScript and uses a
   bounded same-origin asynchronous request only when `fetch`, URL encoding,
   and abort support are all available. Async results must be `text/html` and no
-  larger than 256 KiB before DOM insertion. Other browsers keep native
-  submission.
+  larger than 256 KiB before DOM insertion. The live results region exposes
+  its busy state while the latest async request is active. Other browsers keep
+  native submission.
 - Shared URLs preserve company-only, city-only, or combined filters and
   automatically run either kind of prefilled search in supported browsers.
 
@@ -73,7 +74,7 @@ cd techcompanypay.com
   legacy search endpoint. It also validates the local browser script with Node
   and executes dependency-free search behavior coverage for fallback,
   missing abort support, failures, input bounds, bounded HTML responses, and
-  out-of-order responses.
+  out-of-order response and busy-state ownership.
   Static contracts enforce local assets, CSP, and CI workflow boundaries.
 - Query-string values rendered into the page or share metadata are bounded
   before escaping so long reflected inputs do not expand the response.
@@ -144,6 +145,8 @@ unconfigured endpoint intentionally returns `No matches!`.
   browser runtime, progressive form fallback, and stricter script policy.
 - See `docs/plans/2026-06-10-city-only-share-links.md` for independent share
   filter encoding and city-only search bootstrap coverage.
+- See `docs/plans/2026-06-13-search-results-busy-state.md` for the async live
+  region busy-state contract.
 - The legacy `mysql_*` database API and intentionally blank SQL statements are
   not production-ready. A revival should migrate to PDO or mysqli with
   parameterized queries before adding real credentials or data.

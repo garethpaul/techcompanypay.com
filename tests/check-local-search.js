@@ -33,6 +33,7 @@ function htmlResponse(html, contentType) {
 function createHarness(options) {
   var submitHandler = null;
   var timeoutHandler = null;
+  var resultAttributes = {};
   var elements = {
     searchform: {
       action: 'find.php',
@@ -42,7 +43,19 @@ function createHarness(options) {
         }
       }
     },
-    search_results: {textContent: '', innerHTML: ''},
+    search_results: {
+      textContent: '',
+      innerHTML: '',
+      setAttribute: function (name, value) {
+        resultAttributes[name] = value;
+      },
+      removeAttribute: function (name) {
+        delete resultAttributes[name];
+      },
+      getAttribute: function (name) {
+        return Object.prototype.hasOwnProperty.call(resultAttributes, name) ? resultAttributes[name] : null;
+      }
+    },
     search_term: {value: options.company || ''},
     city: {value: options.city || ''},
     submitbsearch: {disabled: false}
@@ -123,19 +136,23 @@ async function run() {
   assert.strictEqual(requests[0].options.body.get('search_term').length, 100);
   assert.strictEqual(requests[0].options.body.get('city'), 'San Francisco');
   assert.strictEqual(harness.elements.submitbsearch.disabled, true);
+  assert.strictEqual(harness.elements.search_results.getAttribute('aria-busy'), 'true', 'active search should mark results busy');
 
   harness.elements.search_term.value = 'OpenAI';
   harness.submit();
+  requests[0].response.resolve(htmlResponse('<p>Stale result</p>'));
+  await flushPromises();
+  await flushPromises();
+  assert.strictEqual(harness.elements.search_results.innerHTML, '', 'stale responses must not overwrite newer results');
+  assert.strictEqual(harness.elements.search_results.getAttribute('aria-busy'), 'true', 'stale request should not clear newer busy state');
+  assert.strictEqual(harness.elements.submitbsearch.disabled, true);
+
   requests[1].response.resolve(htmlResponse('<p>New result</p>', ' Text/HTML ; charset=UTF-8 '));
   await flushPromises();
   await flushPromises();
   assert.strictEqual(harness.elements.search_results.innerHTML, '<p>New result</p>');
+  assert.strictEqual(harness.elements.search_results.getAttribute('aria-busy'), null, 'successful search should clear busy state');
   assert.strictEqual(harness.elements.submitbsearch.disabled, false);
-
-  requests[0].response.resolve(htmlResponse('<p>Stale result</p>'));
-  await flushPromises();
-  await flushPromises();
-  assert.strictEqual(harness.elements.search_results.innerHTML, '<p>New result</p>', 'stale responses must not overwrite newer results');
 
   var failedHarness = createHarness({
     fetch: function () {
@@ -145,6 +162,7 @@ async function run() {
   failedHarness.submit();
   await flushPromises();
   assert.strictEqual(failedHarness.elements.search_results.textContent, 'Search is temporarily unavailable. Please try again.');
+  assert.strictEqual(failedHarness.elements.search_results.getAttribute('aria-busy'), null, 'failed search should clear busy state');
   assert.strictEqual(failedHarness.elements.submitbsearch.disabled, false);
 
   var timedOutRequest = deferred();
@@ -158,6 +176,7 @@ async function run() {
   timedOutRequest.reject({name: 'AbortError'});
   await flushPromises();
   assert.strictEqual(timedOutHarness.elements.search_results.textContent, 'Search is temporarily unavailable. Please try again.');
+  assert.strictEqual(timedOutHarness.elements.search_results.getAttribute('aria-busy'), null, 'timed out search should clear busy state');
   assert.strictEqual(timedOutHarness.elements.submitbsearch.disabled, false);
 
   var exactLimitHtml = 'x'.repeat(256 * 1024);
@@ -220,6 +239,7 @@ async function run() {
 
   var fallbackHarness = createHarness({fetch: undefined});
   assert.strictEqual(fallbackHarness.submit(), false, 'unsupported browsers should keep the native form submission');
+  assert.strictEqual(fallbackHarness.elements.search_results.getAttribute('aria-busy'), null, 'native fallback should not mark results busy');
 
   var missingAbortRequests = 0;
   var missingAbortHarness = createHarness({
@@ -231,10 +251,11 @@ async function run() {
   });
   assert.strictEqual(missingAbortHarness.submit(), false, 'missing AbortController should keep native submission');
   assert.strictEqual(missingAbortRequests, 0, 'missing AbortController should not start an asynchronous submit');
+  assert.strictEqual(missingAbortHarness.elements.search_results.getAttribute('aria-busy'), null, 'missing AbortController should not mark results busy');
   assert.strictEqual(missingAbortHarness.elements.submitbsearch.disabled, false);
 
   var missingAbortPrefillRequests = 0;
-  createHarness({
+  var missingAbortPrefillHarness = createHarness({
     abortController: false,
     company: 'OpenAI',
     fetch: function () {
@@ -243,9 +264,10 @@ async function run() {
     }
   });
   assert.strictEqual(missingAbortPrefillRequests, 0, 'missing AbortController should not start a prefilled search');
+  assert.strictEqual(missingAbortPrefillHarness.elements.search_results.getAttribute('aria-busy'), null);
 
   var cityOnlyRequests = [];
-  createHarness({
+  var cityOnlyHarness = createHarness({
     city: 'New York',
     fetch: function (url, options) {
       cityOnlyRequests.push({url: url, options: options});
@@ -256,6 +278,7 @@ async function run() {
   assert.strictEqual(cityOnlyRequests[0].url, 'find.php');
   assert.strictEqual(cityOnlyRequests[0].options.body.get('search_term'), '');
   assert.strictEqual(cityOnlyRequests[0].options.body.get('city'), 'New York');
+  assert.strictEqual(cityOnlyHarness.elements.search_results.getAttribute('aria-busy'), 'true', 'prefilled search should mark results busy');
 
   console.log('local search behavior checks passed');
 }

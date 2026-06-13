@@ -26,6 +26,7 @@ Priority:
 - Require abort support before enabling bounded asynchronous search
 - Require bounded `text/html` fragments before async search results reach the
   live DOM
+- Keep the live search results busy state owned by the latest request
 - Keep scripts and styles same-origin unless an external dependency is reviewed
 - Maintain the disclaimer around data accuracy
 - Keep basic response security headers on PHP entry points

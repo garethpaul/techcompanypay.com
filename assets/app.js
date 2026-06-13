@@ -44,6 +44,7 @@
 
     results.textContent = 'Searching salary data…';
     submit.disabled = true;
+    results.setAttribute('aria-busy', 'true');
 
     var options = {
       method: 'POST',
@@ -83,6 +84,7 @@
         if (requestNumber === latestRequest) {
           activeRequest = null;
           submit.disabled = false;
+          results.removeAttribute('aria-busy');
         }
       });
   }

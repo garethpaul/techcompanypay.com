@@ -47,6 +47,8 @@ and timed out. Browsers without `AbortController` retain native form submission
 instead of entering an unbounded asynchronous state.
 Successful async responses must also declare `text/html` and remain at or below
 256 KiB before the fragment can cross the `innerHTML` boundary.
+The live results region reports its busy state only for the latest active
+request, so a superseded response cannot announce newer content as settled.
 
 ## Safe Research Guidelines
 

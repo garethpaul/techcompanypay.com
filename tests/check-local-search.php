@@ -26,12 +26,14 @@ foreach (array(
     "window.fetch(form.action, options)",
     "company.value.slice(0, 100)",
     "city.value.slice(0, 100)",
+    "results.setAttribute('aria-busy', 'true')",
     "requestNumber === latestRequest",
     "requestController.abort()",
     "}, 10000)",
     'var MAX_SEARCH_RESPONSE_LENGTH = 256 * 1024;',
     "responseContentType(response) !== 'text/html'",
     'html.length > MAX_SEARCH_RESPONSE_LENGTH',
+    "results.removeAttribute('aria-busy')",
     "results.textContent = 'Search is temporarily unavailable. Please try again.'",
     "company.value.trim() !== '' || city.value.trim() !== ''",
 ) as $contract) {
@@ -53,10 +55,25 @@ foreach (array(
     'oversized response should not render',
     'non-HTML response should be rejected before reading its body',
     'missing content type should be rejected before reading its body',
+    'active search should mark results busy',
+    'stale request should not clear newer busy state',
+    'successful search should clear busy state',
+    'failed search should clear busy state',
+    'timed out search should clear busy state',
+    'native fallback should not mark results busy',
+    'prefilled search should mark results busy',
 ) as $contract) {
     if (strpos($behaviorSource, $contract) === false) {
         fail('tests/check-local-search.js must keep required behavior coverage: ' . $contract);
     }
+}
+
+if (strpos($scriptSource, "if (requestNumber === latestRequest) {\n          activeRequest = null;\n          submit.disabled = false;\n          results.removeAttribute('aria-busy');\n        }") === false) {
+    fail('assets/app.js must clear busy state only when the latest request settles');
+}
+
+if (strpos($scriptSource, "results.textContent = 'Searching salary data…';\n    submit.disabled = true;\n    results.setAttribute('aria-busy', 'true');\n\n    var options") === false) {
+    fail('assets/app.js must mark results busy before starting the async request');
 }
 
 if (preg_match('/https?:\/\//i', $scriptSource)) {

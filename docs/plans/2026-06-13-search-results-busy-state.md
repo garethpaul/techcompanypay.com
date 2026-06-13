@@ -1,6 +1,6 @@
 # Search Results Busy State
 
-## Status: Planned
+## Status: Completed
 
 ## Context
 
@@ -64,3 +64,31 @@ busy-state updates.
   response limits, share URLs, database behavior, or workflow policy.
 - Do not add dependencies or claim browser/screen-reader validation from the
   offline Node harness.
+
+## Work Completed
+
+- Marked the polite live results region busy when an asynchronous search
+  starts.
+- Cleared busy state only from the latest request's shared settlement path.
+- Added behavior coverage for active, successful, failed, timed-out, stale,
+  unsupported, missing-abort, and prefilled searches.
+- Added fail-closed source/test contracts and maintenance documentation.
+
+## Verification
+
+- `node tests/check-local-search.js` passed the focused offline behavior suite.
+- `php tests/check-local-search.php` passed the static search contract.
+- Full `make check` passed PHP and JavaScript syntax, all PHP/Node behavior and
+  contract checks, workflow policy, documentation plans, and the baseline
+  shell guard.
+- The same full gate passed from an external working directory.
+- Eight focused mutations covering missing/late start state, missing or stale
+  clearing, removed regression assertions, documentation drift, and regressed
+  plan status were rejected.
+- The single workflow YAML parsed successfully; diff whitespace,
+  generated-artifact, and intended-diff secret audits passed.
+- Plan-aware correctness, accessibility, testing, and maintainability review
+  found no actionable findings.
+- Browser smoke testing was unavailable because `agent-browser` is not
+  installed; no live database or screen-reader claim is made from the offline
+  Node harness.

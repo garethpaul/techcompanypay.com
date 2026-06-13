@@ -2,6 +2,8 @@
 
 ## 2026-06-13
 
+- Exposed the latest async salary-search busy state to assistive technology
+  while preventing stale requests from clearing newer activity.
 - Required async salary-search responses to declare `text/html` and remain at
   or below 256 KiB before insertion into the live results region.
 
