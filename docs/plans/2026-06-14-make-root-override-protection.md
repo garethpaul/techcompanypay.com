@@ -1,6 +1,6 @@
 # Make Root Override Protection
 
-## Status: Planned
+## Status: Completed
 
 ## Context
 
@@ -55,3 +55,31 @@ indexing, and this plan's completed evidence.
 This change does not alter PHP or JavaScript behavior, database handling,
 response limits, assets, dependencies, workflow policy, or live database
 requirements.
+
+## Work Completed
+
+- Marked the repository root as an explicit GNU Make override.
+- Added exact declaration, tool-order, alias, root-path, README, and plan
+  contracts to the existing PHP documentation checker.
+- Preserved PHP/Node overrides and all application, test, baseline, and
+  workflow behavior.
+
+## Verification Results
+
+- `make check` passed PHP and JavaScript syntax, all PHP/Node behavior and
+  contract tests, workflow policy, documentation plans, and the baseline shell
+  guard on local PHP 7.4 and Node 20.
+- The same complete gate passed from an external working directory.
+- All five public aliases passed from both working-directory contexts with
+  hostile environment and command-line `ROOT` assignments, for 20 cases.
+- Explicit PHP and Node executable overrides remained effective.
+- Eight protected-declaration, duplicate protected/unprotected assignment,
+  placement, alias, path, README, and plan mutations were rejected.
+- Plan-aware correctness, security, testing, maintainability, reliability, and
+  project-standards review found no actionable findings.
+- Exact diff, protected application/workflow path, generated-artifact,
+  high-confidence secret, and whitespace audits passed.
+- Browser automation was not run because `agent-browser` is unavailable; this
+  build-contract change does not alter a route or client behavior.
+- No cached PHP 8.x container was available, so exact-head hosted PHP 8.2, 8.4,
+  and 8.5 jobs remain the runtime authority.

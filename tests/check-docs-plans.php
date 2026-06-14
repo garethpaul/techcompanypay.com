@@ -16,6 +16,7 @@ $credentialIsolationPlan = $root . '/docs/plans/2026-06-12-checkout-credential-i
 $abortableSearchPlan = $root . '/docs/plans/2026-06-12-abortable-async-search.md';
 $boundedSearchResponsePlan = $root . '/docs/plans/2026-06-13-bounded-html-search-response.md';
 $searchBusyStatePlan = $root . '/docs/plans/2026-06-13-search-results-busy-state.md';
+$rootOverridePlan = $root . '/docs/plans/2026-06-14-make-root-override-protection.md';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
@@ -61,19 +62,41 @@ if (!is_file($searchBusyStatePlan)) {
     fail('docs/plans/2026-06-13-search-results-busy-state.md is missing');
 }
 
+if (!is_file($rootOverridePlan)) {
+    fail('docs/plans/2026-06-14-make-root-override-protection.md is missing');
+}
+
 $makefile = file_get_contents($root . '/Makefile');
 if (strpos($makefile, 'scripts/check-baseline.sh') === false) {
     fail('Makefile must run scripts/check-baseline.sh from make check');
 }
+$rootDeclaration = 'override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))';
+preg_match_all('/^(?:override[[:space:]]+)?ROOT[[:space:]]*[:+?]?=/m', $makefile, $rootAssignments);
+if (count($rootAssignments[0]) !== 1 || substr_count($makefile, $rootDeclaration) !== 1) {
+    fail('Makefile must contain exactly one protected repository-root declaration');
+}
+$toolAndRootBlock = "PHP ?= php\nNODE ?= node\n" . $rootDeclaration;
+if (substr_count($makefile, $toolAndRootBlock) !== 1) {
+    fail('Makefile must keep PHP and Node overrides before the protected repository root');
+}
 foreach (array(
-    'ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))',
-    'NODE ?= node',
+    '.PHONY: build check lint test verify',
+    'build: lint',
+    'verify: lint test build',
+    'check: verify',
+    '"$(ROOT)/scripts/check-baseline.sh"',
+    '"$(ROOT)/index.php"',
+    '"$(ROOT)/find.php"',
     '"$(ROOT)/assets/app.js"',
     '"$(ROOT)/tests/check-local-search.js"',
 ) as $contract) {
     if (strpos($makefile, $contract) === false) {
         fail('Makefile must keep root-independent tool contract: ' . $contract);
     }
+}
+
+if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-14-make-root-override-protection.md') === false) {
+    fail('README must index Make root override protection evidence');
 }
 
 $plans = glob($root . '/docs/plans/*.md');

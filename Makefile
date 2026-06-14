@@ -2,7 +2,7 @@
 
 PHP ?= php
 NODE ?= node
-ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 lint:
 	$(PHP) -l "$(ROOT)/index.php"
