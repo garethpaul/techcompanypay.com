@@ -17,7 +17,8 @@
   function supportsAsyncSearch() {
     return typeof window.fetch === 'function' &&
       typeof window.URLSearchParams === 'function' &&
-      typeof window.AbortController === 'function';
+      typeof window.AbortController === 'function' &&
+      typeof window.Blob === 'function';
   }
 
   function responseContentType(response) {
@@ -25,6 +26,10 @@
       return '';
     }
     return (response.headers.get('Content-Type') || '').split(';', 1)[0].trim().toLowerCase();
+  }
+
+  function responseByteLength(html) {
+    return new window.Blob([html]).size;
   }
 
   function requestSearch() {
@@ -65,7 +70,7 @@
         return response.text();
       })
       .then(function (html) {
-        if (html.length > MAX_SEARCH_RESPONSE_LENGTH) {
+        if (responseByteLength(html) > MAX_SEARCH_RESPONSE_LENGTH) {
           throw new Error('Search response is too large');
         }
         if (requestNumber === latestRequest) {

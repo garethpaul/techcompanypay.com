@@ -60,8 +60,9 @@ cd techcompanypay.com
   be configured before live use.
 - The search form submits directly to `find.php` without JavaScript and uses a
   bounded same-origin asynchronous request only when `fetch`, URL encoding,
-  and abort support are all available. Async results must be `text/html` and no
-  larger than 256 KiB before DOM insertion. The live results region exposes
+  abort, and byte measurement support are all available. Async results must be
+  `text/html` and no larger than the 256 KiB UTF-8 byte response limit before
+  DOM insertion. The live results region exposes
   its busy state while the latest async request is active. Other browsers keep
   native submission.
 - Shared URLs preserve company-only, city-only, or combined filters and
@@ -149,6 +150,8 @@ unconfigured endpoint intentionally returns `No matches!`.
   region busy-state contract.
 - See `docs/plans/2026-06-14-make-root-override-protection.md` for authoritative
   repository-root selection across all Make aliases.
+- See `docs/plans/2026-06-14-utf8-search-response-byte-limit.md` for the
+  byte-accurate asynchronous HTML response boundary.
 - The legacy `mysql_*` database API and intentionally blank SQL statements are
   not production-ready. A revival should migrate to PDO or mysqli with
   parameterized queries before adding real credentials or data.

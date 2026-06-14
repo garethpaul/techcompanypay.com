@@ -17,6 +17,7 @@ $abortableSearchPlan = $root . '/docs/plans/2026-06-12-abortable-async-search.md
 $boundedSearchResponsePlan = $root . '/docs/plans/2026-06-13-bounded-html-search-response.md';
 $searchBusyStatePlan = $root . '/docs/plans/2026-06-13-search-results-busy-state.md';
 $rootOverridePlan = $root . '/docs/plans/2026-06-14-make-root-override-protection.md';
+$utf8ResponseByteLimitPlan = $root . '/docs/plans/2026-06-14-utf8-search-response-byte-limit.md';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
@@ -66,6 +67,10 @@ if (!is_file($rootOverridePlan)) {
     fail('docs/plans/2026-06-14-make-root-override-protection.md is missing');
 }
 
+if (!is_file($utf8ResponseByteLimitPlan)) {
+    fail('docs/plans/2026-06-14-utf8-search-response-byte-limit.md is missing');
+}
+
 $makefile = file_get_contents($root . '/Makefile');
 if (strpos($makefile, 'scripts/check-baseline.sh') === false) {
     fail('Makefile must run scripts/check-baseline.sh from make check');
@@ -99,6 +104,10 @@ if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-14-make-
     fail('README must index Make root override protection evidence');
 }
 
+if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-14-utf8-search-response-byte-limit.md') === false) {
+    fail('README must index UTF-8 search response byte-limit evidence');
+}
+
 $plans = glob($root . '/docs/plans/*.md');
 if (!$plans) {
     fail('docs/plans must contain at least one completed plan');
@@ -111,10 +120,25 @@ foreach ($plans as $plan) {
     }
 }
 
+if (is_file($utf8ResponseByteLimitPlan)) {
+    $body = file_get_contents($utf8ResponseByteLimitPlan);
+    foreach (array(
+        'repository and external-directory `make check` passed',
+        'hostile UTF-8 byte-limit mutations were rejected',
+    ) as $evidence) {
+        if (strpos($body, $evidence) === false) {
+            fail('docs/plans/2026-06-14-utf8-search-response-byte-limit.md must record verification evidence: ' . $evidence);
+        }
+    }
+}
+
 foreach (array('README.md', 'SECURITY.md', 'VISION.md', 'CHANGES.md') as $documentation) {
     $body = strtolower(file_get_contents($root . '/' . $documentation));
     if (strpos($body, 'busy state') === false) {
         fail($documentation . ' must document the async search busy state');
+    }
+    if (strpos($body, 'utf-8 byte response limit') === false) {
+        fail($documentation . ' must document the UTF-8 byte response limit');
     }
 }
 

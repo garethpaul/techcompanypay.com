@@ -69,10 +69,15 @@ function createHarness(options) {
     this.aborted = true;
   };
 
+  function FakeBlob(parts) {
+    this.size = Buffer.byteLength(parts.join(''), 'utf8');
+  }
+
   var windowObject = {
     fetch: options.fetch,
     URLSearchParams: URLSearchParams,
     AbortController: options.abortController === false ? undefined : FakeAbortController,
+    Blob: options.blob === false ? undefined : FakeBlob,
     setTimeout: function (handler) {
       timeoutHandler = handler;
       return 1;
@@ -201,6 +206,17 @@ async function run() {
   assert.strictEqual(oversizedHarness.elements.search_results.innerHTML, '', 'oversized response should not render');
   assert.strictEqual(oversizedHarness.elements.search_results.textContent, 'Search is temporarily unavailable. Please try again.');
 
+  var multibyteOversizedHarness = createHarness({
+    fetch: function () {
+      return Promise.resolve(htmlResponse('é'.repeat((128 * 1024) + 1)));
+    }
+  });
+  multibyteOversizedHarness.submit();
+  await flushPromises();
+  await flushPromises();
+  assert.strictEqual(multibyteOversizedHarness.elements.search_results.innerHTML, '', 'multibyte response above byte limit should not render');
+  assert.strictEqual(multibyteOversizedHarness.elements.search_results.textContent, 'Search is temporarily unavailable. Please try again.');
+
   var nonHtmlTextReads = 0;
   var nonHtmlHarness = createHarness({
     fetch: function () {
@@ -265,6 +281,19 @@ async function run() {
   });
   assert.strictEqual(missingAbortPrefillRequests, 0, 'missing AbortController should not start a prefilled search');
   assert.strictEqual(missingAbortPrefillHarness.elements.search_results.getAttribute('aria-busy'), null);
+
+  var missingBlobRequests = 0;
+  var missingBlobHarness = createHarness({
+    blob: false,
+    company: 'OpenAI',
+    fetch: function () {
+      missingBlobRequests += 1;
+      return deferred().promise;
+    }
+  });
+  assert.strictEqual(missingBlobHarness.submit(), false, 'missing Blob should keep native submission');
+  assert.strictEqual(missingBlobRequests, 0, 'missing Blob should not start an asynchronous submit or prefilled search');
+  assert.strictEqual(missingBlobHarness.elements.search_results.getAttribute('aria-busy'), null);
 
   var cityOnlyRequests = [];
   var cityOnlyHarness = createHarness({

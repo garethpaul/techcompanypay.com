@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-14
+
+- Made the 256 KiB UTF-8 byte response limit byte-accurate for multibyte HTML
+  before asynchronous search results reach the DOM.
+
 ## 2026-06-13
 
 - Exposed the latest async salary-search busy state to assistive technology

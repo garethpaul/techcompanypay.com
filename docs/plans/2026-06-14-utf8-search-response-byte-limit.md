@@ -1,6 +1,6 @@
 # UTF-8 Search Response Byte Limit
 
-## Status: Planned
+## Status: Completed
 
 ## Context
 
@@ -29,11 +29,16 @@ match the documented byte limit for both ASCII and multibyte responses.
 
 ## Verification
 
-- focused Node behavior and PHP source-contract tests
-- repository and external-directory `make check`
-- hostile primitive, measurement, threshold, ordering, multibyte-fixture,
-  fallback, documentation, and plan-status mutations
-- generated-artifact, credential-pattern, protected-path, and exact-diff audits
+- Focused Node behavior and PHP source-contract tests passed, including
+  multibyte overflow and missing-`Blob` native-fallback cases.
+- The repository and external-directory `make check` passed in an isolated
+  Git-backed copy, covering PHP syntax, JavaScript syntax, PHP/Node behavior,
+  documentation, workflow policy, and the scripted baseline.
+- Eight hostile UTF-8 byte-limit mutations were rejected: primitive,
+  measurement, threshold, ordering, multibyte-fixture, fallback,
+  documentation, and plan-status regressions.
+- Generated-artifact, credential-pattern, protected-path, and exact-diff audits
+  passed before commit.
 
 ## Scope Boundary
 

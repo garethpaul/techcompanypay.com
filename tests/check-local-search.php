@@ -20,6 +20,7 @@ foreach (array(
 foreach (array(
     "form.addEventListener('submit'",
     "typeof window.AbortController === 'function'",
+    "typeof window.Blob === 'function'",
     'var requestController = new window.AbortController();',
     "method: 'POST'",
     'signal: requestController.signal',
@@ -32,7 +33,8 @@ foreach (array(
     "}, 10000)",
     'var MAX_SEARCH_RESPONSE_LENGTH = 256 * 1024;',
     "responseContentType(response) !== 'text/html'",
-    'html.length > MAX_SEARCH_RESPONSE_LENGTH',
+    'return new window.Blob([html]).size;',
+    'responseByteLength(html) > MAX_SEARCH_RESPONSE_LENGTH',
     "results.removeAttribute('aria-busy')",
     "results.textContent = 'Search is temporarily unavailable. Please try again.'",
     "company.value.trim() !== '' || city.value.trim() !== ''",
@@ -53,6 +55,7 @@ foreach (array(
     'missing AbortController should not start a prefilled search',
     'response exactly at limit should render',
     'oversized response should not render',
+    'multibyte response above byte limit should not render',
     'non-HTML response should be rejected before reading its body',
     'missing content type should be rejected before reading its body',
     'active search should mark results busy',
@@ -62,6 +65,8 @@ foreach (array(
     'timed out search should clear busy state',
     'native fallback should not mark results busy',
     'prefilled search should mark results busy',
+    'missing Blob should keep native submission',
+    'missing Blob should not start an asynchronous submit or prefilled search',
 ) as $contract) {
     if (strpos($behaviorSource, $contract) === false) {
         fail('tests/check-local-search.js must keep required behavior coverage: ' . $contract);
@@ -74,6 +79,12 @@ if (strpos($scriptSource, "if (requestNumber === latestRequest) {\n          act
 
 if (strpos($scriptSource, "results.textContent = 'Searching salary data…';\n    submit.disabled = true;\n    results.setAttribute('aria-busy', 'true');\n\n    var options") === false) {
     fail('assets/app.js must mark results busy before starting the async request');
+}
+
+$byteLimitPosition = strpos($scriptSource, 'if (responseByteLength(html) > MAX_SEARCH_RESPONSE_LENGTH)');
+$innerHtmlPosition = strpos($scriptSource, 'results.innerHTML = html;');
+if ($byteLimitPosition === false || $innerHtmlPosition === false || $byteLimitPosition > $innerHtmlPosition) {
+    fail('assets/app.js must enforce the UTF-8 byte response limit before DOM insertion');
 }
 
 if (preg_match('/https?:\/\//i', $scriptSource)) {
