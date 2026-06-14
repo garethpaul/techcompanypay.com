@@ -1,0 +1,42 @@
+# UTF-8 Search Response Byte Limit
+
+## Status: Planned
+
+## Context
+
+The asynchronous salary search documents a 256 KiB HTML response limit, but
+the browser currently checks JavaScript string length. UTF-16 code units are
+not response bytes, so multibyte HTML can exceed the documented boundary and
+still reach the results region.
+
+## Priority
+
+The bounded HTML contract protects a direct `innerHTML` boundary. Its unit must
+match the documented byte limit for both ASCII and multibyte responses.
+
+## Requirements
+
+- Measure the encoded HTML fragment size in bytes before DOM insertion.
+- Accept a response exactly at 256 KiB and reject any response above it.
+- Keep content-type validation before body reading and size validation before
+  `innerHTML` assignment.
+- Require the browser byte-measurement primitive for asynchronous enhancement;
+  otherwise preserve native form submission and skip prefilled async searches.
+- Preserve abort, timeout, stale-response, busy-state, same-origin, and input
+  bounds.
+- Add fail-closed static contracts, multibyte behavior tests, and maintained
+  documentation.
+
+## Verification
+
+- focused Node behavior and PHP source-contract tests
+- repository and external-directory `make check`
+- hostile primitive, measurement, threshold, ordering, multibyte-fixture,
+  fallback, documentation, and plan-status mutations
+- generated-artifact, credential-pattern, protected-path, and exact-diff audits
+
+## Scope Boundary
+
+This change does not raise the response cap, sanitize trusted same-origin
+fragments, modify PHP/database behavior, add dependencies, or claim live
+database coverage.
