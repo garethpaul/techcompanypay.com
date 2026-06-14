@@ -47,7 +47,8 @@ and timed out. Browsers without `AbortController` retain native form submission
 instead of entering an unbounded asynchronous state.
 Successful async responses must also declare `text/html` and remain at or below
 the 256 KiB UTF-8 byte response limit before the fragment can cross the
-`innerHTML` boundary.
+`innerHTML` boundary. A strict Content-Length preflight rejects canonical
+oversized declarations before body reads without replacing measured validation.
 The live results region reports its busy state only for the latest active
 request, so a superseded response cannot announce newer content as settled.
 

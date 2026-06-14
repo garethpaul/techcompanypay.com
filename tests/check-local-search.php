@@ -33,6 +33,10 @@ foreach (array(
     "}, 10000)",
     'var MAX_SEARCH_RESPONSE_LENGTH = 256 * 1024;',
     "responseContentType(response) !== 'text/html'",
+    'function declaredResponseByteLength(response)',
+    "response.headers.get('Content-Length')",
+    "!/^(0|[1-9][0-9]*)$/.test(value)",
+    'declaredLength !== null && declaredLength > MAX_SEARCH_RESPONSE_LENGTH',
     'return new window.Blob([html]).size;',
     'responseByteLength(html) > MAX_SEARCH_RESPONSE_LENGTH',
     "results.removeAttribute('aria-busy')",
@@ -54,6 +58,11 @@ foreach (array(
     'missing AbortController should not start an asynchronous submit',
     'missing AbortController should not start a prefilled search',
     'response exactly at limit should render',
+    'declared oversized response should be rejected before reading its body',
+    'exact-limit declaration should still use measured body validation',
+    'malformed declaration should not replace measured body validation',
+    'leading-zero declaration should not replace measured body validation',
+    'underreported oversized response should not render',
     'oversized response should not render',
     'multibyte response above byte limit should not render',
     'non-HTML response should be rejected before reading its body',
@@ -82,9 +91,14 @@ if (strpos($scriptSource, "results.textContent = 'Searching salary data…';\n  
 }
 
 $byteLimitPosition = strpos($scriptSource, 'if (responseByteLength(html) > MAX_SEARCH_RESPONSE_LENGTH)');
+$declaredLimitPosition = strpos($scriptSource, 'if (declaredLength !== null && declaredLength > MAX_SEARCH_RESPONSE_LENGTH)');
+$responseTextPosition = strpos($scriptSource, 'return response.text();');
 $innerHtmlPosition = strpos($scriptSource, 'results.innerHTML = html;');
 if ($byteLimitPosition === false || $innerHtmlPosition === false || $byteLimitPosition > $innerHtmlPosition) {
     fail('assets/app.js must enforce the UTF-8 byte response limit before DOM insertion');
+}
+if ($declaredLimitPosition === false || $responseTextPosition === false || $declaredLimitPosition > $responseTextPosition) {
+    fail('assets/app.js must reject declared oversized responses before reading their bodies');
 }
 
 if (preg_match('/https?:\/\//i', $scriptSource)) {

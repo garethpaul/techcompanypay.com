@@ -1,6 +1,6 @@
 # Search Content-Length Preflight
 
-## Status: Planned
+## Status: Completed
 
 ## Context
 
@@ -52,6 +52,18 @@ headers.
 - hostile parser, ordering, final-byte-check, regression, documentation, and
   plan-status mutations
 - generated-artifact, credential-pattern, exact-diff, and staged-path audits
+
+## Verification Results
+
+- Focused JavaScript behavior and PHP source-contract checks passed.
+- The repository and external-directory `make check` passed PHP and JavaScript
+  syntax, all behavior and policy checks, documentation contracts, and the
+  baseline shell guard.
+- Six hostile Content-Length preflight mutations were rejected across parser
+  syntax, pre-read ordering, final byte measurement, behavior coverage,
+  maintained documentation, and completed-plan evidence.
+- Generated-artifact, credential-pattern, exact-diff, staged-path, and
+  whitespace audits passed.
 
 ## Risks
 

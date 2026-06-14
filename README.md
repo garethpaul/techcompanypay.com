@@ -62,9 +62,10 @@ cd techcompanypay.com
   bounded same-origin asynchronous request only when `fetch`, URL encoding,
   abort, and byte measurement support are all available. Async results must be
   `text/html` and no larger than the 256 KiB UTF-8 byte response limit before
-  DOM insertion. The live results region exposes
-  its busy state while the latest async request is active. Other browsers keep
-  native submission.
+  DOM insertion. A strict Content-Length preflight rejects declared oversized
+  responses before body reads, while measured bytes remain authoritative. The
+  live results region exposes its busy state while the latest async request is
+  active. Other browsers keep native submission.
 - Shared URLs preserve company-only, city-only, or combined filters and
   automatically run either kind of prefilled search in supported browsers.
 
@@ -152,6 +153,8 @@ unconfigured endpoint intentionally returns `No matches!`.
   repository-root selection across all Make aliases.
 - See `docs/plans/2026-06-14-utf8-search-response-byte-limit.md` for the
   byte-accurate asynchronous HTML response boundary.
+- See `docs/plans/2026-06-14-search-content-length-preflight.md` for early
+  rejection of declared oversized asynchronous responses.
 - The legacy `mysql_*` database API and intentionally blank SQL statements are
   not production-ready. A revival should migrate to PDO or mysqli with
   parameterized queries before adding real credentials or data.

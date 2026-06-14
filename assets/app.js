@@ -32,6 +32,17 @@
     return new window.Blob([html]).size;
   }
 
+  function declaredResponseByteLength(response) {
+    if (!response.headers || typeof response.headers.get !== 'function') {
+      return null;
+    }
+    var value = response.headers.get('Content-Length');
+    if (typeof value !== 'string' || !/^(0|[1-9][0-9]*)$/.test(value)) {
+      return null;
+    }
+    return Number(value);
+  }
+
   function requestSearch() {
     var requestNumber = latestRequest + 1;
     latestRequest = requestNumber;
@@ -66,6 +77,10 @@
       .then(function (response) {
         if (!response.ok || responseContentType(response) !== 'text/html') {
           throw new Error('Search request failed');
+        }
+        var declaredLength = declaredResponseByteLength(response);
+        if (declaredLength !== null && declaredLength > MAX_SEARCH_RESPONSE_LENGTH) {
+          throw new Error('Search response is too large');
         }
         return response.text();
       })

@@ -2,6 +2,8 @@
 
 ## 2026-06-14
 
+- Added a strict Content-Length preflight that rejects declared oversized
+  asynchronous search responses before reading their bodies.
 - Made the 256 KiB UTF-8 byte response limit byte-accurate for multibyte HTML
   before asynchronous search results reach the DOM.
 

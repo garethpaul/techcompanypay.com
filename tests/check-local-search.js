@@ -16,15 +16,24 @@ function deferred() {
   return {promise: promise, resolve: resolve, reject: reject};
 }
 
-function htmlResponse(html, contentType) {
+function htmlResponse(html, contentType, contentLength, onText) {
   return {
     ok: true,
     headers: {
       get: function (name) {
-        return name.toLowerCase() === 'content-type' ? (contentType || 'text/html; charset=UTF-8') : null;
+        if (name.toLowerCase() === 'content-type') {
+          return contentType || 'text/html; charset=UTF-8';
+        }
+        if (name.toLowerCase() === 'content-length') {
+          return contentLength === undefined ? null : contentLength;
+        }
+        return null;
       }
     },
     text: function () {
+      if (onText) {
+        onText();
+      }
       return Promise.resolve(html);
     }
   };
@@ -194,6 +203,60 @@ async function run() {
   await flushPromises();
   await flushPromises();
   assert.strictEqual(exactLimitHarness.elements.search_results.innerHTML.length, 256 * 1024, 'response exactly at limit should render');
+
+  var declaredOversizedTextReads = 0;
+  var declaredOversizedHarness = createHarness({
+    fetch: function () {
+      return Promise.resolve(htmlResponse('<p>Unexpected</p>', undefined, String((256 * 1024) + 1), function () {
+        declaredOversizedTextReads += 1;
+      }));
+    }
+  });
+  declaredOversizedHarness.submit();
+  await flushPromises();
+  assert.strictEqual(declaredOversizedTextReads, 0, 'declared oversized response should be rejected before reading its body');
+  assert.strictEqual(declaredOversizedHarness.elements.search_results.textContent, 'Search is temporarily unavailable. Please try again.');
+
+  var declaredExactHarness = createHarness({
+    fetch: function () {
+      return Promise.resolve(htmlResponse('<p>Exact declaration</p>', undefined, String(256 * 1024)));
+    }
+  });
+  declaredExactHarness.submit();
+  await flushPromises();
+  await flushPromises();
+  assert.strictEqual(declaredExactHarness.elements.search_results.innerHTML, '<p>Exact declaration</p>', 'exact-limit declaration should still use measured body validation');
+
+  var malformedLengthHarness = createHarness({
+    fetch: function () {
+      return Promise.resolve(htmlResponse('<p>Malformed declaration</p>', undefined, '262145x'));
+    }
+  });
+  malformedLengthHarness.submit();
+  await flushPromises();
+  await flushPromises();
+  assert.strictEqual(malformedLengthHarness.elements.search_results.innerHTML, '<p>Malformed declaration</p>', 'malformed declaration should not replace measured body validation');
+
+  var nonCanonicalLengthHarness = createHarness({
+    fetch: function () {
+      return Promise.resolve(htmlResponse('<p>Noncanonical declaration</p>', undefined, '0262145'));
+    }
+  });
+  nonCanonicalLengthHarness.submit();
+  await flushPromises();
+  await flushPromises();
+  assert.strictEqual(nonCanonicalLengthHarness.elements.search_results.innerHTML, '<p>Noncanonical declaration</p>', 'leading-zero declaration should not replace measured body validation');
+
+  var underreportedHarness = createHarness({
+    fetch: function () {
+      return Promise.resolve(htmlResponse('é'.repeat((128 * 1024) + 1), undefined, '1'));
+    }
+  });
+  underreportedHarness.submit();
+  await flushPromises();
+  await flushPromises();
+  assert.strictEqual(underreportedHarness.elements.search_results.innerHTML, '', 'underreported oversized response should not render');
+  assert.strictEqual(underreportedHarness.elements.search_results.textContent, 'Search is temporarily unavailable. Please try again.');
 
   var oversizedHarness = createHarness({
     fetch: function () {

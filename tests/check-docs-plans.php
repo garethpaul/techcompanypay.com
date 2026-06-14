@@ -18,6 +18,7 @@ $boundedSearchResponsePlan = $root . '/docs/plans/2026-06-13-bounded-html-search
 $searchBusyStatePlan = $root . '/docs/plans/2026-06-13-search-results-busy-state.md';
 $rootOverridePlan = $root . '/docs/plans/2026-06-14-make-root-override-protection.md';
 $utf8ResponseByteLimitPlan = $root . '/docs/plans/2026-06-14-utf8-search-response-byte-limit.md';
+$contentLengthPreflightPlan = $root . '/docs/plans/2026-06-14-search-content-length-preflight.md';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
@@ -71,6 +72,10 @@ if (!is_file($utf8ResponseByteLimitPlan)) {
     fail('docs/plans/2026-06-14-utf8-search-response-byte-limit.md is missing');
 }
 
+if (!is_file($contentLengthPreflightPlan)) {
+    fail('docs/plans/2026-06-14-search-content-length-preflight.md is missing');
+}
+
 $makefile = file_get_contents($root . '/Makefile');
 if (strpos($makefile, 'scripts/check-baseline.sh') === false) {
     fail('Makefile must run scripts/check-baseline.sh from make check');
@@ -108,6 +113,10 @@ if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-14-utf8-
     fail('README must index UTF-8 search response byte-limit evidence');
 }
 
+if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-14-search-content-length-preflight.md') === false) {
+    fail('README must index search Content-Length preflight evidence');
+}
+
 $plans = glob($root . '/docs/plans/*.md');
 if (!$plans) {
     fail('docs/plans must contain at least one completed plan');
@@ -132,6 +141,19 @@ if (is_file($utf8ResponseByteLimitPlan)) {
     }
 }
 
+if (is_file($contentLengthPreflightPlan)) {
+    $body = file_get_contents($contentLengthPreflightPlan);
+    foreach (array(
+        'Status: Completed',
+        'repository and external-directory `make check` passed',
+        'hostile Content-Length preflight mutations were rejected',
+    ) as $evidence) {
+        if (strpos($body, $evidence) === false) {
+            fail('docs/plans/2026-06-14-search-content-length-preflight.md must record verification evidence: ' . $evidence);
+        }
+    }
+}
+
 foreach (array('README.md', 'SECURITY.md', 'VISION.md', 'CHANGES.md') as $documentation) {
     $body = strtolower(file_get_contents($root . '/' . $documentation));
     if (strpos($body, 'busy state') === false) {
@@ -139,6 +161,9 @@ foreach (array('README.md', 'SECURITY.md', 'VISION.md', 'CHANGES.md') as $docume
     }
     if (strpos($body, 'utf-8 byte response limit') === false) {
         fail($documentation . ' must document the UTF-8 byte response limit');
+    }
+    if (strpos($body, 'content-length preflight') === false) {
+        fail($documentation . ' must document the Content-Length preflight');
     }
 }
 
