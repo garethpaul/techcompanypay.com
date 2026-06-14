@@ -147,6 +147,8 @@ unconfigured endpoint intentionally returns `No matches!`.
   filter encoding and city-only search bootstrap coverage.
 - See `docs/plans/2026-06-13-search-results-busy-state.md` for the async live
   region busy-state contract.
+- See `docs/plans/2026-06-14-make-root-override-protection.md` for authoritative
+  repository-root selection across all Make aliases.
 - The legacy `mysql_*` database API and intentionally blank SQL statements are
   not production-ready. A revival should migrate to PDO or mysqli with
   parameterized queries before adding real credentials or data.
