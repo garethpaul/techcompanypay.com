@@ -19,6 +19,7 @@ $searchBusyStatePlan = $root . '/docs/plans/2026-06-13-search-results-busy-state
 $rootOverridePlan = $root . '/docs/plans/2026-06-14-make-root-override-protection.md';
 $utf8ResponseByteLimitPlan = $root . '/docs/plans/2026-06-14-utf8-search-response-byte-limit.md';
 $contentLengthPreflightPlan = $root . '/docs/plans/2026-06-14-search-content-length-preflight.md';
+$pdoBoundaryPlan = $root . '/docs/plans/2026-06-15-pdo-database-boundary.md';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
@@ -76,6 +77,10 @@ if (!is_file($contentLengthPreflightPlan)) {
     fail('docs/plans/2026-06-14-search-content-length-preflight.md is missing');
 }
 
+if (!is_file($pdoBoundaryPlan)) {
+    fail('docs/plans/2026-06-15-pdo-database-boundary.md is missing');
+}
+
 $makefile = file_get_contents($root . '/Makefile');
 if (strpos($makefile, 'scripts/check-baseline.sh') === false) {
     fail('Makefile must run scripts/check-baseline.sh from make check');
@@ -99,6 +104,7 @@ foreach (array(
     '"$(ROOT)/find.php"',
     '"$(ROOT)/assets/app.js"',
     '"$(ROOT)/tests/check-local-search.js"',
+    '"$(ROOT)/tests/check-find-pdo-boundary.php"',
 ) as $contract) {
     if (strpos($makefile, $contract) === false) {
         fail('Makefile must keep root-independent tool contract: ' . $contract);
@@ -115,6 +121,10 @@ if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-14-utf8-
 
 if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-14-search-content-length-preflight.md') === false) {
     fail('README must index search Content-Length preflight evidence');
+}
+
+if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-15-pdo-database-boundary.md') === false) {
+    fail('README must index PDO database boundary evidence');
 }
 
 $plans = glob($root . '/docs/plans/*.md');
@@ -154,6 +164,21 @@ if (is_file($contentLengthPreflightPlan)) {
     }
 }
 
+if (is_file($pdoBoundaryPlan)) {
+    $body = file_get_contents($pdoBoundaryPlan);
+    foreach (array(
+        'Status: Completed',
+        'repository and external-directory `make check` passed',
+        'hostile PDO boundary mutations were rejected',
+        'generated-artifact and credential-pattern audits passed',
+        'No live database, production schema, credentials, or deployment was exercised',
+    ) as $evidence) {
+        if (strpos($body, $evidence) === false) {
+            fail('docs/plans/2026-06-15-pdo-database-boundary.md must record verification evidence: ' . $evidence);
+        }
+    }
+}
+
 foreach (array('README.md', 'SECURITY.md', 'VISION.md', 'CHANGES.md') as $documentation) {
     $body = strtolower(file_get_contents($root . '/' . $documentation));
     if (strpos($body, 'busy state') === false) {
@@ -164,6 +189,9 @@ foreach (array('README.md', 'SECURITY.md', 'VISION.md', 'CHANGES.md') as $docume
     }
     if (strpos($body, 'content-length preflight') === false) {
         fail($documentation . ' must document the Content-Length preflight');
+    }
+    if (strpos($body, 'pdo prepared statement boundary') === false) {
+        fail($documentation . ' must document the PDO prepared statement boundary');
     }
 }
 
@@ -176,6 +204,44 @@ if (strpos($findSource, 'is_numeric($value) ? number_format((float) $value) : \'
 }
 if (strpos($findSource, 'number_format($salary)') !== false) {
     fail('find.php must not pass raw database salary values to number_format');
+}
+if (preg_match('/mysql_[a-z_]+\s*\(/i', $findSource)) {
+    fail('find.php must not call removed mysql_* APIs');
+}
+foreach (array(
+    "define('TCP_TITLE_SQL', '');",
+    "define('TCP_GROUP_SQL', '');",
+    "array('TCP_DB_DSN', 'TCP_DB_USER', 'TCP_DB_PASSWORD')",
+    'PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION',
+    'PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC',
+    'PDO::ATTR_EMULATE_PREPARES => false',
+    'function tcp_query_rows($database, $sql, $term, $city)',
+    '$statement = $database->prepare($sql);',
+    '$statement->execute(array(\'term\' => $term, \'city\' => $city))',
+    '} catch (Throwable $error) {',
+    "if (!defined('TCP_FIND_LIBRARY_ONLY'))",
+) as $contract) {
+    if (strpos($findSource, $contract) === false) {
+        fail('find.php must retain PDO boundary contract: ' . $contract);
+    }
+}
+if (preg_match('/\$sql\s*\.=|\$sql\s*=\s*[^;]*\$(?:term|city)/', $findSource)) {
+    fail('find.php must not interpolate search input into SQL');
+}
+
+$pdoTestSource = file_get_contents($root . '/tests/check-find-pdo-boundary.php');
+foreach (array(
+    'foreach (array(\'TCP_DB_DSN\', \'TCP_DB_USER\', \'TCP_DB_PASSWORD\') as $missing)',
+    'unset($incomplete[$missing])',
+    'PDO options must require exceptions, associative rows, and native prepares',
+    'query helper must prepare exact SQL and bind normalized term and city values',
+    'blank SQL must return no rows without touching the database',
+    "new FakeStatement(array(array('title' => 'must not leak', 'salary' => 1)))",
+    'database failures must return only the generic no-match response',
+) as $contract) {
+    if (strpos($pdoTestSource, $contract) === false) {
+        fail('PDO boundary test must retain mutation-sensitive assertion: ' . $contract);
+    }
 }
 
 $indexSource = file_get_contents($root . '/index.php');

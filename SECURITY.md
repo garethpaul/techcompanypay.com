@@ -51,6 +51,10 @@ the 256 KiB UTF-8 byte response limit before the fragment can cross the
 oversized declarations before body reads without replacing measured validation.
 The live results region reports its busy state only for the latest active
 request, so a superseded response cannot announce newer content as settled.
+The PDO prepared statement boundary reads database settings only from the
+process environment, disables emulated prepares, binds normalized term and city
+values, and keeps connection or query exceptions out of user-facing responses.
+Production SQL remains disabled until the historical schema is documented.
 
 ## Safe Research Guidelines
 

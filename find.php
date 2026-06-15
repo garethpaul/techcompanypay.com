@@ -1,8 +1,6 @@
 <?php
-define('HOST', '');
-define('USER', '');
-define('PW', '');
-define('DB', '');
+define('TCP_TITLE_SQL', '');
+define('TCP_GROUP_SQL', '');
 
 function tcp_send_security_headers() {
   if (!headers_sent()) {
@@ -27,77 +25,124 @@ function tcp_salary($value) {
   return is_numeric($value) ? number_format((float) $value) : '0';
 }
 
-tcp_send_security_headers();
-
-if (HOST === '' || USER === '' || DB === '' || !function_exists('mysql_connect')) {
-  echo 'No matches!';
-  return;
-}
-
-function tcp_no_matches() {
-  echo 'No matches!';
-}
-
-$connect = mysql_connect(HOST, USER, PW);
-if (!$connect) {
-  tcp_no_matches();
-  return;
-}
-
-if (!mysql_select_db(DB, $connect)) {
-  tcp_no_matches();
-  mysql_close($connect);
-  return;
-}
-
-$term = tcp_post_value('search_term');
-$city = tcp_post_value('city');
-$city = mysql_real_escape_string($city);
-$term = mysql_real_escape_string($term);
-
-$titlesql = "";
-
-$titleresult = $titlesql === '' ? false : mysql_query($titlesql);
-$titlestring = "<div id='titleData' class='tab'>\n<table cellspacing='0'><thead><tr><td>Function Group</td><td>Average Salary</td></tr></thead><tbody>";
-
-if ($titleresult && mysql_num_rows($titleresult) > 0){
-  while($row = mysql_fetch_object($titleresult)){
-    $title = isset($row->title) ? $row->title : '';
-    $salary = isset($row->salary) ? $row->salary : 0;
-	$titlestring .= '<tr>';
-	$titlestring .= "<td><a href='https://www.linkedin.com/search/fpsearch?title=" . rawurlencode($title) . "'>" . tcp_linkedin_title($title) . "</a></td>";
-    $titlestring .= "<td>$".tcp_salary($salary)."</td>";
-
-    $titlestring .= "</tr>\n";
+function tcp_database_config($environment = null) {
+  $values = array();
+  foreach (array('TCP_DB_DSN', 'TCP_DB_USER', 'TCP_DB_PASSWORD') as $name) {
+    if ($environment === null) {
+      $value = getenv($name);
+    } else {
+      $value = array_key_exists($name, $environment) ? $environment[$name] : false;
+    }
+    if ($value === false || !is_string($value)) {
+      return null;
+    }
+    $values[$name] = $value;
   }
-  $titlestring .= '</tbody></table></div>';
 
-}else{
-  $titlestring = "No matches!";
-} 
-echo $titlestring;
-
-$groupsql = "";
-
-$groupresult = $groupsql === '' ? false : mysql_query($groupsql);
-$groupstring = "<div id='titleData' class='tab'>\n<table cellspacing='0'>\n<thead><tr><td>Function Group</td><td>Average Salary</td></tr></thead><tbody>";
-
-if ($groupresult && mysql_num_rows($groupresult) > 0){
-  while($row = mysql_fetch_object($groupresult)){
-    $group = isset($row->group_name) ? $row->group_name : '';
-    $salary = isset($row->salary) ? $row->salary : 0;
-	$groupstring .= '<tr>';
-    $groupstring .= "<td>".htmlspecialchars($group, ENT_QUOTES, 'UTF-8')."</td>";
-    $groupstring .= "<td>$".tcp_salary($salary)."</td>";
-    $groupstring .= "</tr>\n";
+  if (trim($values['TCP_DB_DSN']) === '' || trim($values['TCP_DB_USER']) === '') {
+    return null;
   }
-  $groupstring .= '</tbody></table></div>';
 
-}else{
-  $groupstring = "No matches!";
-} 
-echo $groupstring;
+  return array(
+    'dsn' => $values['TCP_DB_DSN'],
+    'user' => $values['TCP_DB_USER'],
+    'password' => $values['TCP_DB_PASSWORD'],
+  );
+}
 
-mysql_close($connect);
+function tcp_pdo_options() {
+  return array(
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES => false,
+  );
+}
 
+function tcp_create_database($config, $factory = null) {
+  $options = tcp_pdo_options();
+  if ($factory !== null) {
+    return call_user_func($factory, $config['dsn'], $config['user'], $config['password'], $options);
+  }
+
+  return new PDO($config['dsn'], $config['user'], $config['password'], $options);
+}
+
+function tcp_query_rows($database, $sql, $term, $city) {
+  if (trim($sql) === '') {
+    return array();
+  }
+
+  $statement = $database->prepare($sql);
+  if (!$statement) {
+    throw new RuntimeException('database statement preparation failed');
+  }
+  if (!$statement->execute(array('term' => $term, 'city' => $city))) {
+    throw new RuntimeException('database statement execution failed');
+  }
+
+  $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+  if (!is_array($rows)) {
+    throw new RuntimeException('database row fetch failed');
+  }
+  return $rows;
+}
+
+function tcp_render_title_rows($rows) {
+  if (count($rows) === 0) {
+    return 'No matches!';
+  }
+
+  $html = "<div id='titleData' class='tab'>\n<table cellspacing='0'><thead><tr><td>Function Group</td><td>Average Salary</td></tr></thead><tbody>";
+  foreach ($rows as $row) {
+    $title = isset($row['title']) ? $row['title'] : '';
+    $salary = isset($row['salary']) ? $row['salary'] : 0;
+    $html .= '<tr>';
+    $html .= "<td><a href='https://www.linkedin.com/search/fpsearch?title=" . rawurlencode($title) . "'>" . tcp_linkedin_title($title) . '</a></td>';
+    $html .= '<td>$' . tcp_salary($salary) . '</td>';
+    $html .= "</tr>\n";
+  }
+  return $html . '</tbody></table></div>';
+}
+
+function tcp_render_group_rows($rows) {
+  if (count($rows) === 0) {
+    return 'No matches!';
+  }
+
+  $html = "<div id='titleData' class='tab'>\n<table cellspacing='0'>\n<thead><tr><td>Function Group</td><td>Average Salary</td></tr></thead><tbody>";
+  foreach ($rows as $row) {
+    $group = isset($row['group_name']) ? $row['group_name'] : '';
+    $salary = isset($row['salary']) ? $row['salary'] : 0;
+    $html .= '<tr>';
+    $html .= '<td>' . htmlspecialchars($group, ENT_QUOTES, 'UTF-8') . '</td>';
+    $html .= '<td>$' . tcp_salary($salary) . '</td>';
+    $html .= "</tr>\n";
+  }
+  return $html . '</tbody></table></div>';
+}
+
+function tcp_run_find_endpoint($factory = null, $environment = null, $titleSql = TCP_TITLE_SQL, $groupSql = TCP_GROUP_SQL) {
+  tcp_send_security_headers();
+  $config = tcp_database_config($environment);
+  if ($config === null) {
+    echo 'No matches!';
+    return;
+  }
+
+  try {
+    $database = tcp_create_database($config, $factory);
+    $term = tcp_post_value('search_term');
+    $city = tcp_post_value('city');
+    $titleRows = tcp_query_rows($database, $titleSql, $term, $city);
+    $groupRows = tcp_query_rows($database, $groupSql, $term, $city);
+    $output = tcp_render_title_rows($titleRows) . tcp_render_group_rows($groupRows);
+    echo $output;
+  } catch (Throwable $error) {
+    echo 'No matches!';
+  }
+}
+
+if (!defined('TCP_FIND_LIBRARY_ONLY')) {
+  tcp_run_find_endpoint();
+}
 ?>

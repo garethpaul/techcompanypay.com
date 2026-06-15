@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-06-15
+
+- Replaced removed `mysql_*` calls with a PDO prepared statement boundary that
+  uses environment configuration, keeps database failures generic, and leaves
+  production SQL disabled until the historical schema is documented.
+
 ## 2026-06-14
 
 - Added a strict Content-Length preflight that rejects declared oversized

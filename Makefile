@@ -16,6 +16,7 @@ test:
 	$(PHP) "$(ROOT)/tests/check-find-scalar-inputs.php"
 	$(PHP) "$(ROOT)/tests/check-find-salary-format.php"
 	$(PHP) "$(ROOT)/tests/check-find-fail-closed.php"
+	$(PHP) "$(ROOT)/tests/check-find-pdo-boundary.php"
 	$(PHP) "$(ROOT)/tests/check-security-headers.php"
 	$(PHP) "$(ROOT)/tests/check-external-assets.php"
 	$(PHP) "$(ROOT)/tests/check-local-search.php"

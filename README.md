@@ -56,8 +56,9 @@ cd techcompanypay.com
 
 - Start a local server with `php -S 127.0.0.1:8000`, then open
   `http://127.0.0.1:8000/`.
-- `find.php` is the legacy search endpoint and requires database constants to
-  be configured before live use.
+- `find.php` is the legacy search endpoint. Its PDO prepared statement boundary
+  reads `TCP_DB_DSN`, `TCP_DB_USER`, and `TCP_DB_PASSWORD` from the environment
+  before any database access.
 - The search form submits directly to `find.php` without JavaScript and uses a
   bounded same-origin asynchronous request only when `fetch`, URL encoding,
   abort, and byte measurement support are all available. Async results must be
@@ -84,6 +85,9 @@ cd techcompanypay.com
   empty strings before legacy query handling.
 - Search endpoint checks also require database salary values to be formatted
   only after numeric validation, with invalid values displayed as `$0`.
+- Search endpoint checks require the PDO prepared statement boundary to use
+  exception mode, associative rows, native prepares, and named `term`/`city`
+  parameters without a live database driver.
 - `make check` also verifies that PHP entry points keep basic response security
   headers, including frame denial and a deny-by-default browser permissions
   policy for camera, microphone, and geolocation. The header checks also require
@@ -107,9 +111,9 @@ unconfigured endpoint intentionally returns `No matches!`.
 
 ## Configuration and Secrets
 
-- Live result queries require the database constants at the top of `find.php`.
-  Keep real values in an ignored local configuration mechanism if the archived
-  site is revived; do not commit credentials.
+- Live result queries require `TCP_DB_DSN`, `TCP_DB_USER`, and
+  `TCP_DB_PASSWORD` in the process environment. Keep real values in a local
+  secret manager; do not commit credentials.
 
 ## Security and Privacy Notes
 
@@ -155,9 +159,11 @@ unconfigured endpoint intentionally returns `No matches!`.
   byte-accurate asynchronous HTML response boundary.
 - See `docs/plans/2026-06-14-search-content-length-preflight.md` for early
   rejection of declared oversized asynchronous responses.
-- The legacy `mysql_*` database API and intentionally blank SQL statements are
-  not production-ready. A revival should migrate to PDO or mysqli with
-  parameterized queries before adding real credentials or data.
+- See `docs/plans/2026-06-15-pdo-database-boundary.md` for the PHP 8-compatible
+  connection and parameterized execution contract.
+- The title and group SQL statements remain intentionally blank because the
+  historical schema is absent. A revival must document that schema and add
+  reviewed prepared queries before adding real credentials or data.
 
 ## Contributing
 

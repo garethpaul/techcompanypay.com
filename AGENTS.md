@@ -16,7 +16,9 @@ database behavior and offline response-safety tests.
 
 - Keep database credentials and local configuration out of git.
 - Preserve generic fail-closed responses when database configuration or legacy
-  database support is unavailable.
+  database access is unavailable.
+- Preserve the PDO prepared statement boundary, native prepares, environment
+  configuration, and named term/city parameters.
 - Escape reflected HTML, validate salary values, and retain the checked response
   security headers.
 - Do not invent the intentionally absent legacy SQL queries or production
@@ -28,4 +30,3 @@ database behavior and offline response-safety tests.
 2. Run the narrowest behavior test first, then `make check`.
 3. Update tests and documentation with behavior or workflow changes.
 4. Record unavailable live database validation as a remaining risk.
-

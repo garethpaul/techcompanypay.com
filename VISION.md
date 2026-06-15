@@ -40,13 +40,16 @@ Priority:
 - Keep fixed-runner PHP and Node verification explicit in GitHub Actions
 - Keep hosted checkout credential-free and the workflow surface singular
 - Keep a scriptable baseline guard for required files and local metadata
-- Treat old PHP `mysql_*` APIs and incomplete SQL as legacy risks
+- Keep the PHP 8 PDO prepared statement boundary environment-configured,
+  exception-safe, and free of interpolated search input
+- Treat the intentionally blank production SQL and undocumented schema as
+  explicit revival blockers
 
 Next priorities:
 
 - Add setup notes or archive status to the README
-- Replace legacy database APIs if the site is revived
-- Parameterize all queries and escape all rendered user input
+- Document the historical schema before restoring production queries
+- Keep all restored queries parameterized and all rendered values escaped
 - Document data sources, freshness, and removal policy
 
 Contribution rules:
