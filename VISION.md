@@ -43,6 +43,7 @@ Priority:
 - Keep the PHP 8 PDO prepared statement boundary environment-configured,
   exception-safe, and free of interpolated search input
 - Keep bounded incremental PDO result rows fail-closed before salary rendering
+- Keep a bounded encoded database result response shared across both salary tables and fail closed before partial output
 - Treat the intentionally blank production SQL and undocumented schema as
   explicit revival blockers
 

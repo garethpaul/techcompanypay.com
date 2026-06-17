@@ -2,6 +2,7 @@
 define('TCP_TITLE_SQL', '');
 define('TCP_GROUP_SQL', '');
 define('TCP_MAX_RESULT_ROWS', 500);
+define('TCP_MAX_RESULT_BYTES', 262144);
 
 function tcp_send_security_headers() {
   if (!headers_sent()) {
@@ -101,38 +102,77 @@ function tcp_query_rows($database, $sql, $term, $city, $maxRows = TCP_MAX_RESULT
   return $rows;
 }
 
-function tcp_render_title_rows($rows) {
+function tcp_validate_result_byte_limit($maxBytes) {
+  if (!is_int($maxBytes) || $maxBytes < 1) {
+    throw new InvalidArgumentException('encoded result byte limit must be a positive integer');
+  }
+}
+
+function tcp_append_bounded_html(&$html, $chunk, $maxBytes) {
+  tcp_validate_result_byte_limit($maxBytes);
+  $chunkBytes = strlen($chunk);
+  if ($chunkBytes > $maxBytes - strlen($html)) {
+    throw new RuntimeException('encoded result byte limit exceeded');
+  }
+  $html .= $chunk;
+}
+
+function tcp_append_title_rows(&$html, $rows, $maxBytes) {
   if (count($rows) === 0) {
-    return 'No matches!';
+    tcp_append_bounded_html($html, 'No matches!', $maxBytes);
+    return;
   }
 
-  $html = "<div id='titleData' class='tab'>\n<table cellspacing='0'><thead><tr><td>Function Group</td><td>Average Salary</td></tr></thead><tbody>";
+  tcp_append_bounded_html($html, "<div id='titleData' class='tab'>\n<table cellspacing='0'><thead><tr><td>Function Group</td><td>Average Salary</td></tr></thead><tbody>", $maxBytes);
   foreach ($rows as $row) {
     $title = isset($row['title']) ? $row['title'] : '';
     $salary = isset($row['salary']) ? $row['salary'] : 0;
-    $html .= '<tr>';
-    $html .= "<td><a href='https://www.linkedin.com/search/fpsearch?title=" . rawurlencode($title) . "'>" . tcp_linkedin_title($title) . '</a></td>';
-    $html .= '<td>$' . tcp_salary($salary) . '</td>';
-    $html .= "</tr>\n";
+    $rowHtml = '<tr>';
+    $rowHtml .= "<td><a href='https://www.linkedin.com/search/fpsearch?title=" . rawurlencode($title) . "'>" . tcp_linkedin_title($title) . '</a></td>';
+    $rowHtml .= '<td>$' . tcp_salary($salary) . '</td>';
+    $rowHtml .= "</tr>\n";
+    tcp_append_bounded_html($html, $rowHtml, $maxBytes);
   }
-  return $html . '</tbody></table></div>';
+  tcp_append_bounded_html($html, '</tbody></table></div>', $maxBytes);
 }
 
-function tcp_render_group_rows($rows) {
+function tcp_render_title_rows($rows, $maxBytes = TCP_MAX_RESULT_BYTES) {
+  $html = '';
+  tcp_append_title_rows($html, $rows, $maxBytes);
+  return $html;
+}
+
+function tcp_append_group_rows(&$html, $rows, $maxBytes) {
   if (count($rows) === 0) {
-    return 'No matches!';
+    tcp_append_bounded_html($html, 'No matches!', $maxBytes);
+    return;
   }
 
-  $html = "<div id='titleData' class='tab'>\n<table cellspacing='0'>\n<thead><tr><td>Function Group</td><td>Average Salary</td></tr></thead><tbody>";
+  tcp_append_bounded_html($html, "<div id='titleData' class='tab'>\n<table cellspacing='0'>\n<thead><tr><td>Function Group</td><td>Average Salary</td></tr></thead><tbody>", $maxBytes);
   foreach ($rows as $row) {
     $group = isset($row['group_name']) ? $row['group_name'] : '';
     $salary = isset($row['salary']) ? $row['salary'] : 0;
-    $html .= '<tr>';
-    $html .= '<td>' . htmlspecialchars($group, ENT_QUOTES, 'UTF-8') . '</td>';
-    $html .= '<td>$' . tcp_salary($salary) . '</td>';
-    $html .= "</tr>\n";
+    $rowHtml = '<tr>';
+    $rowHtml .= '<td>' . htmlspecialchars($group, ENT_QUOTES, 'UTF-8') . '</td>';
+    $rowHtml .= '<td>$' . tcp_salary($salary) . '</td>';
+    $rowHtml .= "</tr>\n";
+    tcp_append_bounded_html($html, $rowHtml, $maxBytes);
   }
-  return $html . '</tbody></table></div>';
+  tcp_append_bounded_html($html, '</tbody></table></div>', $maxBytes);
+}
+
+function tcp_render_group_rows($rows, $maxBytes = TCP_MAX_RESULT_BYTES) {
+  $html = '';
+  tcp_append_group_rows($html, $rows, $maxBytes);
+  return $html;
+}
+
+function tcp_render_result_rows($titleRows, $groupRows, $maxBytes = TCP_MAX_RESULT_BYTES) {
+  tcp_validate_result_byte_limit($maxBytes);
+  $html = '';
+  tcp_append_title_rows($html, $titleRows, $maxBytes);
+  tcp_append_group_rows($html, $groupRows, $maxBytes);
+  return $html;
 }
 
 function tcp_run_find_endpoint($factory = null, $environment = null, $titleSql = TCP_TITLE_SQL, $groupSql = TCP_GROUP_SQL) {
@@ -149,7 +189,7 @@ function tcp_run_find_endpoint($factory = null, $environment = null, $titleSql =
     $city = tcp_post_value('city');
     $titleRows = tcp_query_rows($database, $titleSql, $term, $city);
     $groupRows = tcp_query_rows($database, $groupSql, $term, $city);
-    $output = tcp_render_title_rows($titleRows) . tcp_render_group_rows($groupRows);
+    $output = tcp_render_result_rows($titleRows, $groupRows);
     echo $output;
   } catch (Throwable $error) {
     echo 'No matches!';

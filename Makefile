@@ -18,6 +18,8 @@ test:
 	$(PHP) "$(ROOT)/tests/check-find-fail-closed.php"
 	$(PHP) "$(ROOT)/tests/check-find-pdo-boundary.php"
 	$(PHP) "$(ROOT)/tests/check-pdo-row-budget-mutations.php"
+	$(PHP) "$(ROOT)/tests/check-encoded-result-budget.php"
+	$(PHP) "$(ROOT)/tests/check-encoded-result-budget-mutations.php"
 	$(PHP) "$(ROOT)/tests/check-security-headers.php"
 	$(PHP) "$(ROOT)/tests/check-external-assets.php"
 	$(PHP) "$(ROOT)/tests/check-local-search.php"

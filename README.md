@@ -59,7 +59,8 @@ cd techcompanypay.com
 - `find.php` is the legacy search endpoint. Its PDO prepared statement boundary
   reads `TCP_DB_DSN`, `TCP_DB_USER`, and `TCP_DB_PASSWORD` from the environment
   before any database access. Bounded incremental PDO result rows prevent a
-  query from materializing an unbounded result set before rendering.
+  query from materializing an unbounded result set before rendering. A bounded encoded database result response also rejects a combined title/group payload
+  above 256 KiB before any table output is emitted.
 - The search form submits directly to `find.php` without JavaScript and uses a
   bounded same-origin asynchronous request only when `fetch`, URL encoding,
   abort, and byte measurement support are all available. Async results must be
@@ -166,6 +167,8 @@ unconfigured endpoint intentionally returns `No matches!`.
   connection and parameterized execution contract.
 - See `docs/plans/2026-06-17-bounded-pdo-result-rows.md` for the bounded
   incremental PDO result rows and overflow failure contract.
+- See `docs/plans/2026-06-17-bounded-encoded-result-response.md` for the shared
+  byte-accurate title/group response budget and fail-closed output contract.
 - The title and group SQL statements remain intentionally blank because the
   historical schema is absent. A revival must document that schema and add
   reviewed prepared queries before adding real credentials or data.

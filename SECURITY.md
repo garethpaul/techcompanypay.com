@@ -56,6 +56,8 @@ process environment, disables emulated prepares, binds normalized term and city
 values, and keeps connection or query exceptions out of user-facing responses.
 Bounded incremental PDO result rows prevent all-at-once result materialization
 and reject overflow without returning a partial salary table.
+A bounded encoded database result response applies the same 256 KiB browser boundary after HTML and URL encoding across both result tables, and fails
+closed before emitting partial output.
 Production SQL remains disabled until the historical schema is documented.
 
 ## Safe Research Guidelines

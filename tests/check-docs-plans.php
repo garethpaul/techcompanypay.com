@@ -21,6 +21,7 @@ $utf8ResponseByteLimitPlan = $root . '/docs/plans/2026-06-14-utf8-search-respons
 $contentLengthPreflightPlan = $root . '/docs/plans/2026-06-14-search-content-length-preflight.md';
 $pdoBoundaryPlan = $root . '/docs/plans/2026-06-15-pdo-database-boundary.md';
 $pdoRowBudgetPlan = $root . '/docs/plans/2026-06-17-bounded-pdo-result-rows.md';
+$encodedResultBudgetPlan = $root . '/docs/plans/2026-06-17-bounded-encoded-result-response.md';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
@@ -111,6 +112,8 @@ foreach (array(
     '"$(ROOT)/tests/check-local-search.js"',
     '"$(ROOT)/tests/check-find-pdo-boundary.php"',
     '"$(ROOT)/tests/check-pdo-row-budget-mutations.php"',
+    '"$(ROOT)/tests/check-encoded-result-budget.php"',
+    '"$(ROOT)/tests/check-encoded-result-budget-mutations.php"',
 ) as $contract) {
     if (strpos($makefile, $contract) === false) {
         fail('Makefile must keep root-independent tool contract: ' . $contract);
@@ -135,6 +138,10 @@ if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-15-pdo-d
 
 if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-17-bounded-pdo-result-rows.md') === false) {
     fail('README must index bounded PDO result row evidence');
+}
+
+if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-17-bounded-encoded-result-response.md') === false) {
+    fail('README must index bounded encoded result response evidence');
 }
 
 $plans = glob($root . '/docs/plans/*.md');
@@ -204,6 +211,21 @@ if (is_file($pdoRowBudgetPlan)) {
     }
 }
 
+if (is_file($encodedResultBudgetPlan)) {
+    $body = file_get_contents($encodedResultBudgetPlan);
+    foreach (array(
+        'Status: Completed',
+        'repository and external-directory `make check` passed',
+        'five hostile encoded-result byte-budget mutations were rejected',
+        'generated-artifact and credential-pattern audits passed',
+        'No live database, production schema, credentials, deployment, or rendered browser session was exercised',
+    ) as $evidence) {
+        if (strpos($body, $evidence) === false) {
+            fail('docs/plans/2026-06-17-bounded-encoded-result-response.md must record verification evidence: ' . $evidence);
+        }
+    }
+}
+
 foreach (array('README.md', 'SECURITY.md', 'VISION.md', 'CHANGES.md') as $documentation) {
     $body = strtolower(file_get_contents($root . '/' . $documentation));
     if (strpos($body, 'busy state') === false) {
@@ -220,6 +242,9 @@ foreach (array('README.md', 'SECURITY.md', 'VISION.md', 'CHANGES.md') as $docume
     }
     if (strpos($body, 'bounded incremental pdo result rows') === false) {
         fail($documentation . ' must document bounded incremental PDO result rows');
+    }
+    if (strpos($body, 'bounded encoded database result response') === false) {
+        fail($documentation . ' must document the bounded encoded database result response');
     }
 }
 
@@ -244,6 +269,7 @@ foreach (array(
     'PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC',
     'PDO::ATTR_EMULATE_PREPARES => false',
     "define('TCP_MAX_RESULT_ROWS', 500);",
+    "define('TCP_MAX_RESULT_BYTES', 262144);",
     'function tcp_query_rows($database, $sql, $term, $city, $maxRows = TCP_MAX_RESULT_ROWS)',
     'if (!is_int($maxRows) || $maxRows < 1) {',
     '$statement = $database->prepare($sql);',
@@ -251,6 +277,12 @@ foreach (array(
     '$row = $statement->fetch(PDO::FETCH_ASSOC);',
     'if (count($rows) === $maxRows) {',
     "throw new RuntimeException('database result row limit exceeded');",
+    'function tcp_append_bounded_html(&$html, $chunk, $maxBytes)',
+    '$chunkBytes = strlen($chunk);',
+    'if ($chunkBytes > $maxBytes - strlen($html)) {',
+    "throw new RuntimeException('encoded result byte limit exceeded');",
+    'function tcp_render_result_rows($titleRows, $groupRows, $maxBytes = TCP_MAX_RESULT_BYTES)',
+    '$output = tcp_render_result_rows($titleRows, $groupRows);',
     '} catch (Throwable $error) {',
     "if (!defined('TCP_FIND_LIBRARY_ONLY'))",
 ) as $contract) {

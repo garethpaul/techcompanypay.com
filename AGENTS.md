@@ -21,6 +21,8 @@ database behavior and offline response-safety tests.
   configuration, and named term/city parameters.
 - Preserve bounded incremental PDO result rows and fail closed rather than
   returning a partial salary table when the row budget is exceeded.
+- Preserve the bounded encoded database result response and its shared 256 KiB
+  title/group budget before any endpoint output is emitted.
 - Escape reflected HTML, validate salary values, and retain the checked response
   security headers.
 - Do not invent the intentionally absent legacy SQL queries or production

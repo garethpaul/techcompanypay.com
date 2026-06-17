@@ -2,6 +2,8 @@
 
 ## 2026-06-17
 
+- Added a shared 256 KiB bounded encoded database result response that measures
+  post-escaping bytes and rejects combined table overflow before output.
 - Replaced unbounded PDO `fetchAll()` result materialization with bounded incremental PDO result rows that reject overflow without partial output.
 
 ## 2026-06-15
