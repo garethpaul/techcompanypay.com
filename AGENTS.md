@@ -19,6 +19,8 @@ database behavior and offline response-safety tests.
   database access is unavailable.
 - Preserve the PDO prepared statement boundary, native prepares, environment
   configuration, and named term/city parameters.
+- Preserve bounded incremental PDO result rows and fail closed rather than
+  returning a partial salary table when the row budget is exceeded.
 - Escape reflected HTML, validate salary values, and retain the checked response
   security headers.
 - Do not invent the intentionally absent legacy SQL queries or production

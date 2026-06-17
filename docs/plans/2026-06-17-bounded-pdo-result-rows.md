@@ -1,6 +1,6 @@
 # Bound PDO Result Rows Before Rendering
 
-## Status: Planned
+## Status: Completed
 
 ## Summary
 
@@ -112,6 +112,19 @@ browser rendering is exercised.
   credential patterns.
 - Require the exact-head hosted PHP 8.2, 8.4, and 8.5 verification jobs before
   treating the pull request as terminal green.
+
+### Results
+
+- The focused PDO boundary test passed exact-budget, invalid-budget,
+  malformed-row, fetch-failure, overflow, and generic endpoint behavior.
+- All four hostile PDO row-budget mutations were rejected: disabled validation,
+  off-by-one overflow, all-at-once fetching, and partial overflow output.
+- The repository and external-directory `make check` passed with PHP syntax,
+  JavaScript syntax, all behavior contracts, documentation checks, workflow
+  checks, and the scripted baseline gate.
+- Exact-diff and untracked-file audits passed.
+- The generated-artifact and credential-pattern audits passed.
+- No live database, production schema, credentials, deployment, or rendered browser session was exercised.
 
 ## Risks And Boundaries
 

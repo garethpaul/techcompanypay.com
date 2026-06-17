@@ -1,6 +1,7 @@
 <?php
 define('TCP_TITLE_SQL', '');
 define('TCP_GROUP_SQL', '');
+define('TCP_MAX_RESULT_ROWS', 500);
 
 function tcp_send_security_headers() {
   if (!headers_sent()) {
@@ -67,7 +68,10 @@ function tcp_create_database($config, $factory = null) {
   return new PDO($config['dsn'], $config['user'], $config['password'], $options);
 }
 
-function tcp_query_rows($database, $sql, $term, $city) {
+function tcp_query_rows($database, $sql, $term, $city, $maxRows = TCP_MAX_RESULT_ROWS) {
+  if (!is_int($maxRows) || $maxRows < 1) {
+    throw new InvalidArgumentException('database result row limit must be a positive integer');
+  }
   if (trim($sql) === '') {
     return array();
   }
@@ -80,9 +84,19 @@ function tcp_query_rows($database, $sql, $term, $city) {
     throw new RuntimeException('database statement execution failed');
   }
 
-  $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
-  if (!is_array($rows)) {
-    throw new RuntimeException('database row fetch failed');
+  $rows = array();
+  while (true) {
+    $row = $statement->fetch(PDO::FETCH_ASSOC);
+    if ($row === false) {
+      break;
+    }
+    if (!is_array($row)) {
+      throw new RuntimeException('database row fetch failed');
+    }
+    if (count($rows) === $maxRows) {
+      throw new RuntimeException('database result row limit exceeded');
+    }
+    $rows[] = $row;
   }
   return $rows;
 }

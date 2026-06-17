@@ -58,7 +58,8 @@ cd techcompanypay.com
   `http://127.0.0.1:8000/`.
 - `find.php` is the legacy search endpoint. Its PDO prepared statement boundary
   reads `TCP_DB_DSN`, `TCP_DB_USER`, and `TCP_DB_PASSWORD` from the environment
-  before any database access.
+  before any database access. Bounded incremental PDO result rows prevent a
+  query from materializing an unbounded result set before rendering.
 - The search form submits directly to `find.php` without JavaScript and uses a
   bounded same-origin asynchronous request only when `fetch`, URL encoding,
   abort, and byte measurement support are all available. Async results must be
@@ -87,7 +88,9 @@ cd techcompanypay.com
   only after numeric validation, with invalid values displayed as `$0`.
 - Search endpoint checks require the PDO prepared statement boundary to use
   exception mode, associative rows, native prepares, and named `term`/`city`
-  parameters without a live database driver.
+  parameters without a live database driver. They also require a positive row
+  budget, incremental associative fetches, exact-limit success, and generic
+  failure without partial output when a result set exceeds the budget.
 - `make check` also verifies that PHP entry points keep basic response security
   headers, including frame denial and a deny-by-default browser permissions
   policy for camera, microphone, and geolocation. The header checks also require
@@ -161,6 +164,8 @@ unconfigured endpoint intentionally returns `No matches!`.
   rejection of declared oversized asynchronous responses.
 - See `docs/plans/2026-06-15-pdo-database-boundary.md` for the PHP 8-compatible
   connection and parameterized execution contract.
+- See `docs/plans/2026-06-17-bounded-pdo-result-rows.md` for the bounded
+  incremental PDO result rows and overflow failure contract.
 - The title and group SQL statements remain intentionally blank because the
   historical schema is absent. A revival must document that schema and add
   reviewed prepared queries before adding real credentials or data.

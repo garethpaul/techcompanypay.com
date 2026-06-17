@@ -36,6 +36,7 @@ for path in \
 	"tests/check-share-url.php" \
   "tests/check-security-headers.php" \
 	"tests/check-find-pdo-boundary.php" \
+	"tests/check-pdo-row-budget-mutations.php" \
 	"docs/plans/2026-06-10-local-search-and-ci.md" \
 	"docs/plans/2026-06-10-deterministic-toolchains.md" \
 	"docs/plans/2026-06-10-city-only-share-links.md" \
@@ -43,6 +44,7 @@ for path in \
   "docs/plans/2026-06-10-php-ci-baseline.md" \
   "docs/plans/2026-06-08-techcompanypay-baseline.md" \
 	"docs/plans/2026-06-15-pdo-database-boundary.md" \
+	"docs/plans/2026-06-17-bounded-pdo-result-rows.md" \
   "docs/plans/2026-06-09-scripted-baseline-check.md" \
   "scripts/check-baseline.sh"; do
   require_file "$path"

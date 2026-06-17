@@ -54,6 +54,8 @@ request, so a superseded response cannot announce newer content as settled.
 The PDO prepared statement boundary reads database settings only from the
 process environment, disables emulated prepares, binds normalized term and city
 values, and keeps connection or query exceptions out of user-facing responses.
+Bounded incremental PDO result rows prevent all-at-once result materialization
+and reject overflow without returning a partial salary table.
 Production SQL remains disabled until the historical schema is documented.
 
 ## Safe Research Guidelines

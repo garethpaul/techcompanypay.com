@@ -1,5 +1,9 @@
 # Changes
 
+## 2026-06-17
+
+- Replaced unbounded PDO `fetchAll()` result materialization with bounded incremental PDO result rows that reject overflow without partial output.
+
 ## 2026-06-15
 
 - Replaced removed `mysql_*` calls with a PDO prepared statement boundary that

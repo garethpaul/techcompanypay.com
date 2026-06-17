@@ -42,6 +42,7 @@ Priority:
 - Keep a scriptable baseline guard for required files and local metadata
 - Keep the PHP 8 PDO prepared statement boundary environment-configured,
   exception-safe, and free of interpolated search input
+- Keep bounded incremental PDO result rows fail-closed before salary rendering
 - Treat the intentionally blank production SQL and undocumented schema as
   explicit revival blockers
 

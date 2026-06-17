@@ -9,14 +9,16 @@ require __DIR__ . '/../find.php';
 
 class FakeStatement {
     public $executions = array();
+    public $fetchModes = array();
     private $rows;
+    private $rowIndex = 0;
     private $executeResult;
-    private $fetchResult;
+    private $fetchError;
 
-    public function __construct($rows, $executeResult = true, $fetchResult = null) {
+    public function __construct($rows, $executeResult = true, $fetchError = null) {
         $this->rows = $rows;
         $this->executeResult = $executeResult;
-        $this->fetchResult = $fetchResult;
+        $this->fetchError = $fetchError;
     }
 
     public function execute($parameters) {
@@ -24,11 +26,20 @@ class FakeStatement {
         return $this->executeResult;
     }
 
-    public function fetchAll($mode) {
+    public function fetch($mode) {
+        $this->fetchModes[] = $mode;
         if ($mode !== PDO::FETCH_ASSOC) {
             fail('query rows must request associative fetches');
         }
-        return $this->fetchResult === null ? $this->rows : $this->fetchResult;
+        if ($this->fetchError !== null) {
+            throw $this->fetchError;
+        }
+        if (!array_key_exists($this->rowIndex, $this->rows)) {
+            return false;
+        }
+        $row = $this->rows[$this->rowIndex];
+        $this->rowIndex++;
+        return $row;
     }
 }
 
@@ -101,8 +112,45 @@ $sql = 'SELECT title, salary FROM salaries WHERE title = :term AND city = :city'
 $rows = tcp_query_rows($database, $sql, 'R&D <Lead>', 'A&B');
 if ($database->prepared !== array($sql) ||
         $statement->executions !== array(array('term' => 'R&D <Lead>', 'city' => 'A&B')) ||
+        $statement->fetchModes !== array(PDO::FETCH_ASSOC, PDO::FETCH_ASSOC) ||
         $rows[0]['title'] !== 'R&D <Lead>') {
     fail('query helper must prepare exact SQL and bind normalized term and city values');
+}
+
+foreach (array(0, -1, 1.5, '2') as $invalidBudget) {
+    $invalidDatabase = new FakeDatabase(array(new FakeStatement(array())));
+    try {
+        tcp_query_rows($invalidDatabase, $sql, 'term', 'city', $invalidBudget);
+        fail('query helper must reject non-positive and non-integer row budgets');
+    } catch (InvalidArgumentException $error) {
+        if ($invalidDatabase->prepared !== array()) {
+            fail('invalid row budgets must fail before statement preparation');
+        }
+    }
+}
+
+$budgetRows = array(
+    array('title' => 'One', 'salary' => 1),
+    array('title' => 'Two', 'salary' => 2),
+);
+$exactStatement = new FakeStatement($budgetRows);
+$exactRows = tcp_query_rows(new FakeDatabase(array($exactStatement)), $sql, 'term', 'city', 2);
+if ($exactRows !== $budgetRows || count($exactStatement->fetchModes) !== 3) {
+    fail('query helper must return an exact-budget result set unchanged');
+}
+
+$overflowStatement = new FakeStatement(array_merge(
+    $budgetRows,
+    array(array('title' => 'Three', 'salary' => 3))
+));
+try {
+    tcp_query_rows(new FakeDatabase(array($overflowStatement)), $sql, 'term', 'city', 2);
+    fail('query helper must reject the first row beyond the result budget');
+} catch (RuntimeException $error) {
+    if ($error->getMessage() !== 'database result row limit exceeded' ||
+            count($overflowStatement->fetchModes) !== 3) {
+        fail('query helper must fail closed on the first excess result row');
+    }
 }
 
 $blankDatabase = new FakeDatabase();
@@ -143,7 +191,14 @@ $failureFactories = array(
     function() { throw new RuntimeException('secret connection detail'); },
     function() { return new FakeDatabase(array(), false); },
     function() { return new FakeDatabase(array(new FakeStatement(array(), false))); },
-    function() { return new FakeDatabase(array(new FakeStatement(array(), true, false))); },
+    function() { return new FakeDatabase(array(new FakeStatement(array(), true, new RuntimeException('secret fetch detail')))); },
+    function() { return new FakeDatabase(array(new FakeStatement(array('invalid row')))); },
+    function() {
+        return new FakeDatabase(array(new FakeStatement(array_fill(0, TCP_MAX_RESULT_ROWS + 1, array(
+            'title' => 'must not leak',
+            'salary' => 1,
+        )))));
+    },
     function() {
         return new FakeDatabase(array(
             new FakeStatement(array(array('title' => 'must not leak', 'salary' => 1))),

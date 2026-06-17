@@ -20,6 +20,7 @@ $rootOverridePlan = $root . '/docs/plans/2026-06-14-make-root-override-protectio
 $utf8ResponseByteLimitPlan = $root . '/docs/plans/2026-06-14-utf8-search-response-byte-limit.md';
 $contentLengthPreflightPlan = $root . '/docs/plans/2026-06-14-search-content-length-preflight.md';
 $pdoBoundaryPlan = $root . '/docs/plans/2026-06-15-pdo-database-boundary.md';
+$pdoRowBudgetPlan = $root . '/docs/plans/2026-06-17-bounded-pdo-result-rows.md';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
@@ -81,6 +82,10 @@ if (!is_file($pdoBoundaryPlan)) {
     fail('docs/plans/2026-06-15-pdo-database-boundary.md is missing');
 }
 
+if (!is_file($pdoRowBudgetPlan)) {
+    fail('docs/plans/2026-06-17-bounded-pdo-result-rows.md is missing');
+}
+
 $makefile = file_get_contents($root . '/Makefile');
 if (strpos($makefile, 'scripts/check-baseline.sh') === false) {
     fail('Makefile must run scripts/check-baseline.sh from make check');
@@ -105,6 +110,7 @@ foreach (array(
     '"$(ROOT)/assets/app.js"',
     '"$(ROOT)/tests/check-local-search.js"',
     '"$(ROOT)/tests/check-find-pdo-boundary.php"',
+    '"$(ROOT)/tests/check-pdo-row-budget-mutations.php"',
 ) as $contract) {
     if (strpos($makefile, $contract) === false) {
         fail('Makefile must keep root-independent tool contract: ' . $contract);
@@ -125,6 +131,10 @@ if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-14-searc
 
 if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-15-pdo-database-boundary.md') === false) {
     fail('README must index PDO database boundary evidence');
+}
+
+if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-17-bounded-pdo-result-rows.md') === false) {
+    fail('README must index bounded PDO result row evidence');
 }
 
 $plans = glob($root . '/docs/plans/*.md');
@@ -179,6 +189,21 @@ if (is_file($pdoBoundaryPlan)) {
     }
 }
 
+if (is_file($pdoRowBudgetPlan)) {
+    $body = file_get_contents($pdoRowBudgetPlan);
+    foreach (array(
+        'Status: Completed',
+        'repository and external-directory `make check` passed',
+        'four hostile PDO row-budget mutations were rejected',
+        'generated-artifact and credential-pattern audits passed',
+        'No live database, production schema, credentials, deployment, or rendered browser session was exercised',
+    ) as $evidence) {
+        if (strpos($body, $evidence) === false) {
+            fail('docs/plans/2026-06-17-bounded-pdo-result-rows.md must record verification evidence: ' . $evidence);
+        }
+    }
+}
+
 foreach (array('README.md', 'SECURITY.md', 'VISION.md', 'CHANGES.md') as $documentation) {
     $body = strtolower(file_get_contents($root . '/' . $documentation));
     if (strpos($body, 'busy state') === false) {
@@ -192,6 +217,9 @@ foreach (array('README.md', 'SECURITY.md', 'VISION.md', 'CHANGES.md') as $docume
     }
     if (strpos($body, 'pdo prepared statement boundary') === false) {
         fail($documentation . ' must document the PDO prepared statement boundary');
+    }
+    if (strpos($body, 'bounded incremental pdo result rows') === false) {
+        fail($documentation . ' must document bounded incremental PDO result rows');
     }
 }
 
@@ -215,15 +243,23 @@ foreach (array(
     'PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION',
     'PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC',
     'PDO::ATTR_EMULATE_PREPARES => false',
-    'function tcp_query_rows($database, $sql, $term, $city)',
+    "define('TCP_MAX_RESULT_ROWS', 500);",
+    'function tcp_query_rows($database, $sql, $term, $city, $maxRows = TCP_MAX_RESULT_ROWS)',
+    'if (!is_int($maxRows) || $maxRows < 1) {',
     '$statement = $database->prepare($sql);',
     '$statement->execute(array(\'term\' => $term, \'city\' => $city))',
+    '$row = $statement->fetch(PDO::FETCH_ASSOC);',
+    'if (count($rows) === $maxRows) {',
+    "throw new RuntimeException('database result row limit exceeded');",
     '} catch (Throwable $error) {',
     "if (!defined('TCP_FIND_LIBRARY_ONLY'))",
 ) as $contract) {
     if (strpos($findSource, $contract) === false) {
         fail('find.php must retain PDO boundary contract: ' . $contract);
     }
+}
+if (strpos($findSource, 'fetchAll(') !== false) {
+    fail('find.php must not materialize unbounded PDO result sets with fetchAll');
 }
 if (preg_match('/\$sql\s*\.=|\$sql\s*=\s*[^;]*\$(?:term|city)/', $findSource)) {
     fail('find.php must not interpolate search input into SQL');
@@ -235,12 +271,27 @@ foreach (array(
     'unset($incomplete[$missing])',
     'PDO options must require exceptions, associative rows, and native prepares',
     'query helper must prepare exact SQL and bind normalized term and city values',
+    'query helper must reject non-positive and non-integer row budgets',
+    'query helper must return an exact-budget result set unchanged',
+    'query helper must reject the first row beyond the result budget',
     'blank SQL must return no rows without touching the database',
     "new FakeStatement(array(array('title' => 'must not leak', 'salary' => 1)))",
     'database failures must return only the generic no-match response',
 ) as $contract) {
     if (strpos($pdoTestSource, $contract) === false) {
         fail('PDO boundary test must retain mutation-sensitive assertion: ' . $contract);
+    }
+}
+
+$pdoMutationSource = file_get_contents($root . '/tests/check-pdo-row-budget-mutations.php');
+foreach (array(
+    'disabled budget validation',
+    'off-by-one overflow check',
+    'all-at-once row fetch',
+    'partial overflow return',
+) as $mutation) {
+    if (strpos($pdoMutationSource, $mutation) === false) {
+        fail('PDO row budget mutation suite must retain hostile mutation: ' . $mutation);
     }
 }
 
