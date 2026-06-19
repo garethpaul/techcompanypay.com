@@ -19,19 +19,86 @@ foreach (array(
 
 foreach (array(
     "form.addEventListener('submit'",
+    "typeof window.AbortController === 'function'",
+    "typeof window.Blob === 'function'",
+    'var requestController = new window.AbortController();',
     "method: 'POST'",
+    'signal: requestController.signal',
     "window.fetch(form.action, options)",
     "company.value.slice(0, 100)",
     "city.value.slice(0, 100)",
+    "results.setAttribute('aria-busy', 'true')",
     "requestNumber === latestRequest",
     "requestController.abort()",
     "}, 10000)",
+    'var MAX_SEARCH_RESPONSE_LENGTH = 256 * 1024;',
+    "responseContentType(response) !== 'text/html'",
+    'function declaredResponseByteLength(response)',
+    "response.headers.get('Content-Length')",
+    "!/^(0|[1-9][0-9]*)$/.test(value)",
+    'declaredLength !== null && declaredLength > MAX_SEARCH_RESPONSE_LENGTH',
+    'return new window.Blob([html]).size;',
+    'responseByteLength(html) > MAX_SEARCH_RESPONSE_LENGTH',
+    "results.removeAttribute('aria-busy')",
     "results.textContent = 'Search is temporarily unavailable. Please try again.'",
     "company.value.trim() !== '' || city.value.trim() !== ''",
 ) as $contract) {
     if (strpos($scriptSource, $contract) === false) {
         fail('assets/app.js must keep search contract: ' . $contract);
     }
+}
+
+if (strpos($scriptSource, "typeof window.AbortController === 'function' ?") !== false) {
+    fail('assets/app.js must not enable asynchronous search without guaranteed abort support');
+}
+
+$behaviorSource = file_get_contents(__DIR__ . '/check-local-search.js');
+foreach (array(
+    'missing AbortController should keep native submission',
+    'missing AbortController should not start an asynchronous submit',
+    'missing AbortController should not start a prefilled search',
+    'response exactly at limit should render',
+    'declared oversized response should be rejected before reading its body',
+    'exact-limit declaration should still use measured body validation',
+    'malformed declaration should not replace measured body validation',
+    'leading-zero declaration should not replace measured body validation',
+    'underreported oversized response should not render',
+    'oversized response should not render',
+    'multibyte response above byte limit should not render',
+    'non-HTML response should be rejected before reading its body',
+    'missing content type should be rejected before reading its body',
+    'active search should mark results busy',
+    'stale request should not clear newer busy state',
+    'successful search should clear busy state',
+    'failed search should clear busy state',
+    'timed out search should clear busy state',
+    'native fallback should not mark results busy',
+    'prefilled search should mark results busy',
+    'missing Blob should keep native submission',
+    'missing Blob should not start an asynchronous submit or prefilled search',
+) as $contract) {
+    if (strpos($behaviorSource, $contract) === false) {
+        fail('tests/check-local-search.js must keep required behavior coverage: ' . $contract);
+    }
+}
+
+if (strpos($scriptSource, "if (requestNumber === latestRequest) {\n          activeRequest = null;\n          submit.disabled = false;\n          results.removeAttribute('aria-busy');\n        }") === false) {
+    fail('assets/app.js must clear busy state only when the latest request settles');
+}
+
+if (strpos($scriptSource, "results.textContent = 'Searching salary data…';\n    submit.disabled = true;\n    results.setAttribute('aria-busy', 'true');\n\n    var options") === false) {
+    fail('assets/app.js must mark results busy before starting the async request');
+}
+
+$byteLimitPosition = strpos($scriptSource, 'if (responseByteLength(html) > MAX_SEARCH_RESPONSE_LENGTH)');
+$declaredLimitPosition = strpos($scriptSource, 'if (declaredLength !== null && declaredLength > MAX_SEARCH_RESPONSE_LENGTH)');
+$responseTextPosition = strpos($scriptSource, 'return response.text();');
+$innerHtmlPosition = strpos($scriptSource, 'results.innerHTML = html;');
+if ($byteLimitPosition === false || $innerHtmlPosition === false || $byteLimitPosition > $innerHtmlPosition) {
+    fail('assets/app.js must enforce the UTF-8 byte response limit before DOM insertion');
+}
+if ($declaredLimitPosition === false || $responseTextPosition === false || $declaredLimitPosition > $responseTextPosition) {
+    fail('assets/app.js must reject declared oversized responses before reading their bodies');
 }
 
 if (preg_match('/https?:\/\//i', $scriptSource)) {

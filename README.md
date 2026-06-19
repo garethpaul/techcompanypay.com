@@ -56,11 +56,19 @@ cd techcompanypay.com
 
 - Start a local server with `php -S 127.0.0.1:8000`, then open
   `http://127.0.0.1:8000/`.
-- `find.php` is the legacy search endpoint and requires database constants to
-  be configured before live use.
+- `find.php` is the legacy search endpoint. Its PDO prepared statement boundary
+  reads `TCP_DB_DSN`, `TCP_DB_USER`, and `TCP_DB_PASSWORD` from the environment
+  before any database access. Bounded incremental PDO result rows prevent a
+  query from materializing an unbounded result set before rendering. A bounded encoded database result response also rejects a combined title/group payload
+  above 256 KiB before any table output is emitted.
 - The search form submits directly to `find.php` without JavaScript and uses a
-  bounded same-origin asynchronous request when modern browser APIs are
-  available.
+  bounded same-origin asynchronous request only when `fetch`, URL encoding,
+  abort, and byte measurement support are all available. Async results must be
+  `text/html` and no larger than the 256 KiB UTF-8 byte response limit before
+  DOM insertion. A strict Content-Length preflight rejects declared oversized
+  responses before body reads, while measured bytes remain authoritative. The
+  live results region exposes its busy state while the latest async request is
+  active. Other browsers keep native submission.
 - Shared URLs preserve company-only, city-only, or combined filters and
   automatically run either kind of prefilled search in supported browsers.
 
@@ -70,14 +78,20 @@ cd techcompanypay.com
   scalar-safe query input checks, and a fail-closed check for the unconfigured
   legacy search endpoint. It also validates the local browser script with Node
   and executes dependency-free search behavior coverage for fallback,
-  failures, input bounds, and out-of-order responses. Static contracts enforce
-  local assets, CSP, and CI workflow boundaries.
+  missing abort support, failures, input bounds, bounded HTML responses, and
+  out-of-order response and busy-state ownership.
+  Static contracts enforce local assets, CSP, and CI workflow boundaries.
 - Query-string values rendered into the page or share metadata are bounded
   before escaping so long reflected inputs do not expand the response.
 - Search endpoint checks also require non-scalar POST fields to normalize to
   empty strings before legacy query handling.
 - Search endpoint checks also require database salary values to be formatted
   only after numeric validation, with invalid values displayed as `$0`.
+- Search endpoint checks require the PDO prepared statement boundary to use
+  exception mode, associative rows, native prepares, and named `term`/`city`
+  parameters without a live database driver. They also require a positive row
+  budget, incremental associative fetches, exact-limit success, and generic
+  failure without partial output when a result set exceeds the budget.
 - `make check` also verifies that PHP entry points keep basic response security
   headers, including frame denial and a deny-by-default browser permissions
   policy for camera, microphone, and geolocation. The header checks also require
@@ -91,7 +105,8 @@ cd techcompanypay.com
 - `make check` also requires completed canonical plans under `docs/plans`.
 - GitHub Actions runs the same `make check` gate on fixed Ubuntu 24.04 runners
   with Node 24 and PHP 8.2, 8.4, and 8.5, read-only permissions, bounded jobs,
-  concurrency cancellation, and immutable action pins.
+  concurrency cancellation, immutable action pins, credential-free checkout,
+  and one reviewed workflow file.
 - Narrow targets are available as `make lint`, `make test`, `make build`, and
   `make verify`.
 
@@ -100,9 +115,9 @@ unconfigured endpoint intentionally returns `No matches!`.
 
 ## Configuration and Secrets
 
-- Live result queries require the database constants at the top of `find.php`.
-  Keep real values in an ignored local configuration mechanism if the archived
-  site is revived; do not commit credentials.
+- Live result queries require `TCP_DB_DSN`, `TCP_DB_USER`, and
+  `TCP_DB_PASSWORD` in the process environment. Keep real values in a local
+  secret manager; do not commit credentials.
 
 ## Security and Privacy Notes
 
@@ -140,9 +155,23 @@ unconfigured endpoint intentionally returns `No matches!`.
   browser runtime, progressive form fallback, and stricter script policy.
 - See `docs/plans/2026-06-10-city-only-share-links.md` for independent share
   filter encoding and city-only search bootstrap coverage.
-- The legacy `mysql_*` database API and intentionally blank SQL statements are
-  not production-ready. A revival should migrate to PDO or mysqli with
-  parameterized queries before adding real credentials or data.
+- See `docs/plans/2026-06-13-search-results-busy-state.md` for the async live
+  region busy-state contract.
+- See `docs/plans/2026-06-14-make-root-override-protection.md` for authoritative
+  repository-root selection across all Make aliases.
+- See `docs/plans/2026-06-14-utf8-search-response-byte-limit.md` for the
+  byte-accurate asynchronous HTML response boundary.
+- See `docs/plans/2026-06-14-search-content-length-preflight.md` for early
+  rejection of declared oversized asynchronous responses.
+- See `docs/plans/2026-06-15-pdo-database-boundary.md` for the PHP 8-compatible
+  connection and parameterized execution contract.
+- See `docs/plans/2026-06-17-bounded-pdo-result-rows.md` for the bounded
+  incremental PDO result rows and overflow failure contract.
+- See `docs/plans/2026-06-17-bounded-encoded-result-response.md` for the shared
+  byte-accurate title/group response budget and fail-closed output contract.
+- The title and group SQL statements remain intentionally blank because the
+  historical schema is absent. A revival must document that schema and add
+  reviewed prepared queries before adding real credentials or data.
 
 ## Contributing
 

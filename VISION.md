@@ -23,6 +23,12 @@ Priority:
 - Format salary output only after numeric validation
 - Keep the primary search functional without third-party JavaScript
 - Preserve company-only and city-only filters in shared search URLs
+- Require abort support before enabling bounded asynchronous search
+- Require bounded `text/html` fragments before async search results reach the
+  live DOM
+- Preserve the 256 KiB UTF-8 byte response limit for multibyte HTML fragments
+- Preserve the Content-Length preflight before asynchronous response body reads
+- Keep the live search results busy state owned by the latest request
 - Keep scripts and styles same-origin unless an external dependency is reviewed
 - Maintain the disclaimer around data accuracy
 - Keep basic response security headers on PHP entry points
@@ -32,14 +38,20 @@ Priority:
 - Keep the page render and runtime independent of third-party assets
 - Keep completed maintenance plans under `docs/plans`
 - Keep fixed-runner PHP and Node verification explicit in GitHub Actions
+- Keep hosted checkout credential-free and the workflow surface singular
 - Keep a scriptable baseline guard for required files and local metadata
-- Treat old PHP `mysql_*` APIs and incomplete SQL as legacy risks
+- Keep the PHP 8 PDO prepared statement boundary environment-configured,
+  exception-safe, and free of interpolated search input
+- Keep bounded incremental PDO result rows fail-closed before salary rendering
+- Keep a bounded encoded database result response shared across both salary tables and fail closed before partial output
+- Treat the intentionally blank production SQL and undocumented schema as
+  explicit revival blockers
 
 Next priorities:
 
 - Add setup notes or archive status to the README
-- Replace legacy database APIs if the site is revived
-- Parameterize all queries and escape all rendered user input
+- Document the historical schema before restoring production queries
+- Keep all restored queries parameterized and all rendered values escaped
 - Document data sources, freshness, and removal policy
 
 Contribution rules:

@@ -8,13 +8,39 @@
   var submit = document.getElementById('submitbsearch');
   var activeRequest = null;
   var latestRequest = 0;
+  var MAX_SEARCH_RESPONSE_LENGTH = 256 * 1024;
 
   if (!form || !results || !company || !city || !submit) {
     return;
   }
 
   function supportsAsyncSearch() {
-    return typeof window.fetch === 'function' && typeof window.URLSearchParams === 'function';
+    return typeof window.fetch === 'function' &&
+      typeof window.URLSearchParams === 'function' &&
+      typeof window.AbortController === 'function' &&
+      typeof window.Blob === 'function';
+  }
+
+  function responseContentType(response) {
+    if (!response.headers || typeof response.headers.get !== 'function') {
+      return '';
+    }
+    return (response.headers.get('Content-Type') || '').split(';', 1)[0].trim().toLowerCase();
+  }
+
+  function responseByteLength(html) {
+    return new window.Blob([html]).size;
+  }
+
+  function declaredResponseByteLength(response) {
+    if (!response.headers || typeof response.headers.get !== 'function') {
+      return null;
+    }
+    var value = response.headers.get('Content-Length');
+    if (typeof value !== 'string' || !/^(0|[1-9][0-9]*)$/.test(value)) {
+      return null;
+    }
+    return Number(value);
   }
 
   function requestSearch() {
@@ -25,9 +51,8 @@
       activeRequest.abort();
     }
 
-    var requestController = typeof window.AbortController === 'function' ? new window.AbortController() : null;
+    var requestController = new window.AbortController();
     var requestTimedOut = false;
-    var requestTimeout = null;
     activeRequest = requestController;
     var body = new window.URLSearchParams();
     body.append('search_term', company.value.slice(0, 100));
@@ -35,28 +60,34 @@
 
     results.textContent = 'Searching salary data…';
     submit.disabled = true;
+    results.setAttribute('aria-busy', 'true');
 
     var options = {
       method: 'POST',
       body: body,
-      headers: {'X-Requested-With': 'XMLHttpRequest'}
+      headers: {'X-Requested-With': 'XMLHttpRequest'},
+      signal: requestController.signal
     };
-    if (requestController) {
-      options.signal = requestController.signal;
-      requestTimeout = window.setTimeout(function () {
-        requestTimedOut = true;
-        requestController.abort();
-      }, 10000);
-    }
+    var requestTimeout = window.setTimeout(function () {
+      requestTimedOut = true;
+      requestController.abort();
+    }, 10000);
 
     window.fetch(form.action, options)
       .then(function (response) {
-        if (!response.ok) {
+        if (!response.ok || responseContentType(response) !== 'text/html') {
           throw new Error('Search request failed');
+        }
+        var declaredLength = declaredResponseByteLength(response);
+        if (declaredLength !== null && declaredLength > MAX_SEARCH_RESPONSE_LENGTH) {
+          throw new Error('Search response is too large');
         }
         return response.text();
       })
       .then(function (html) {
+        if (responseByteLength(html) > MAX_SEARCH_RESPONSE_LENGTH) {
+          throw new Error('Search response is too large');
+        }
         if (requestNumber === latestRequest) {
           results.innerHTML = html;
         }
@@ -73,6 +104,7 @@
         if (requestNumber === latestRequest) {
           activeRequest = null;
           submit.disabled = false;
+          results.removeAttribute('aria-busy');
         }
       });
   }

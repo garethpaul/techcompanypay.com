@@ -31,6 +31,8 @@ Helpful reports include:
 - No primary dependency manifest was detected in the repository root. If dependencies are added later, include a manifest and prefer reproducible installation instructions.
 - GitHub Actions uses fixed Ubuntu 24.04 runners, pinned Node 24 setup, and a
   PHP 8.2/8.4/8.5 matrix with read-only repository permissions.
+- Checkout credentials are not persisted, and the repository contract rejects
+  additional unreviewed workflow files.
 
 ## Service and API Notes
 
@@ -39,6 +41,24 @@ For web services, APIs, sockets, or scraping workflows, prioritize reports invol
 ## Dependency and Supply Chain Security
 
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.
+
+The browser search enhancement is enabled only when its request can be aborted
+and timed out. Browsers without `AbortController` retain native form submission
+instead of entering an unbounded asynchronous state.
+Successful async responses must also declare `text/html` and remain at or below
+the 256 KiB UTF-8 byte response limit before the fragment can cross the
+`innerHTML` boundary. A strict Content-Length preflight rejects canonical
+oversized declarations before body reads without replacing measured validation.
+The live results region reports its busy state only for the latest active
+request, so a superseded response cannot announce newer content as settled.
+The PDO prepared statement boundary reads database settings only from the
+process environment, disables emulated prepares, binds normalized term and city
+values, and keeps connection or query exceptions out of user-facing responses.
+Bounded incremental PDO result rows prevent all-at-once result materialization
+and reject overflow without returning a partial salary table.
+A bounded encoded database result response applies the same 256 KiB browser boundary after HTML and URL encoding across both result tables, and fails
+closed before emitting partial output.
+Production SQL remains disabled until the historical schema is documented.
 
 ## Safe Research Guidelines
 

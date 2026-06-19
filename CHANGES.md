@@ -1,5 +1,38 @@
 # Changes
 
+## 2026-06-17
+
+- Added a shared 256 KiB bounded encoded database result response that measures
+  post-escaping bytes and rejects combined table overflow before output.
+- Replaced unbounded PDO `fetchAll()` result materialization with bounded incremental PDO result rows that reject overflow without partial output.
+
+## 2026-06-15
+
+- Replaced removed `mysql_*` calls with a PDO prepared statement boundary that
+  uses environment configuration, keeps database failures generic, and leaves
+  production SQL disabled until the historical schema is documented.
+
+## 2026-06-14
+
+- Added a strict Content-Length preflight that rejects declared oversized
+  asynchronous search responses before reading their bodies.
+- Made the 256 KiB UTF-8 byte response limit byte-accurate for multibyte HTML
+  before asynchronous search results reach the DOM.
+
+## 2026-06-13
+
+- Exposed the latest async salary-search busy state to assistive technology
+  while preventing stale requests from clearing newer activity.
+- Required async salary-search responses to declare `text/html` and remain at
+  or below 256 KiB before insertion into the live results region.
+
+## 2026-06-12
+
+- Kept native form submission when abort support is unavailable so the
+  asynchronous search path always retains its bounded timeout lifecycle.
+- Disabled checkout credential persistence and made CI verification reject
+  additional unreviewed workflow files.
+
 ## 2026-06-10
 
 - Preserved city-only filters in canonical share URLs and automatically ran

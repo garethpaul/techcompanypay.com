@@ -2,7 +2,7 @@
 
 PHP ?= php
 NODE ?= node
-ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 lint:
 	$(PHP) -l "$(ROOT)/index.php"
@@ -16,6 +16,10 @@ test:
 	$(PHP) "$(ROOT)/tests/check-find-scalar-inputs.php"
 	$(PHP) "$(ROOT)/tests/check-find-salary-format.php"
 	$(PHP) "$(ROOT)/tests/check-find-fail-closed.php"
+	$(PHP) "$(ROOT)/tests/check-find-pdo-boundary.php"
+	$(PHP) "$(ROOT)/tests/check-pdo-row-budget-mutations.php"
+	$(PHP) "$(ROOT)/tests/check-encoded-result-budget.php"
+	$(PHP) "$(ROOT)/tests/check-encoded-result-budget-mutations.php"
 	$(PHP) "$(ROOT)/tests/check-security-headers.php"
 	$(PHP) "$(ROOT)/tests/check-external-assets.php"
 	$(PHP) "$(ROOT)/tests/check-local-search.php"
