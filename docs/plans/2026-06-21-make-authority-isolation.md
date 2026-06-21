@@ -12,7 +12,9 @@ break or replace verification before checked-in targets completed.
 ## Work Completed
 
 - Derived the repository root from the loaded Makefile with quoting that
-  preserves spaces, quotes, backticks, and literal dollar characters.
+  preserves spaces, quotes, and backticks in the checkout path.
+- Preserved literal-dollar trusted PHP and Node executable values without
+  allowing their contents to execute as GNU Make syntax.
 - Fixed the recipe shell and shell flags while preserving trusted PHP and Node
   executable overrides.
 - Rejected bypassing Make modes, caller `MAKEFLAGS`, preload metadata,
@@ -35,6 +37,12 @@ before a checked-in Makefile can reject them. Trusted automation must invoke
 only this repository Makefile. PHP and Node remain trusted caller inputs so
 local toolchains and the hosted matrix continue to work; their raw values are
 frozen before Make expansion and shell-quoted.
+
+GNU Make also expands dollar syntax in an absolute `-f` filename before the
+normalized name is exposed through `MAKEFILE_LIST`. Checked-in code cannot
+recover the original spelling, so trusted checkout paths must not contain
+literal dollar syntax. The harness's literal-dollar case covers trusted tool
+values, not Makefile filenames.
 
 ## Scope Boundary
 
