@@ -37,4 +37,4 @@ jobs:
           php-version: ${{ matrix.php-version }}
           coverage: none
       - name: Run full verification
-        run: make check
+        run: /usr/bin/make check

@@ -47,8 +47,10 @@ for path in \
   "docs/plans/2026-06-08-techcompanypay-baseline.md" \
 	"docs/plans/2026-06-15-pdo-database-boundary.md" \
 		"docs/plans/2026-06-17-bounded-pdo-result-rows.md" \
-		"docs/plans/2026-06-17-bounded-encoded-result-response.md" \
+	"docs/plans/2026-06-17-bounded-encoded-result-response.md" \
   "docs/plans/2026-06-09-scripted-baseline-check.md" \
+  "docs/plans/2026-06-21-make-authority-isolation.md" \
+  "scripts/test-makefile-root.sh" \
   "scripts/check-baseline.sh"; do
   require_file "$path"
 done
@@ -58,7 +60,7 @@ if ! grep -Fq "scripts/check-baseline.sh" "$MAKEFILE"; then
   exit 1
 fi
 
-for target in "lint:" "test:" "build:" "verify:" "check:"; do
+for target in "lint:" "test:" "build:" "root-test:" "verify:" "check:"; do
   if ! grep -Fq "$target" "$MAKEFILE"; then
     printf '%s\n' "Makefile must expose the $target gate." >&2
     exit 1

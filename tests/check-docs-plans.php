@@ -22,6 +22,8 @@ $contentLengthPreflightPlan = $root . '/docs/plans/2026-06-14-search-content-len
 $pdoBoundaryPlan = $root . '/docs/plans/2026-06-15-pdo-database-boundary.md';
 $pdoRowBudgetPlan = $root . '/docs/plans/2026-06-17-bounded-pdo-result-rows.md';
 $encodedResultBudgetPlan = $root . '/docs/plans/2026-06-17-bounded-encoded-result-response.md';
+$makeAuthorityPlan = $root . '/docs/plans/2026-06-21-make-authority-isolation.md';
+$makeAuthorityRunner = $root . '/scripts/test-makefile-root.sh';
 
 if (!is_file($canonical)) {
     fail('docs/plans/2026-06-08-techcompanypay-baseline.md is missing');
@@ -87,33 +89,57 @@ if (!is_file($pdoRowBudgetPlan)) {
     fail('docs/plans/2026-06-17-bounded-pdo-result-rows.md is missing');
 }
 
+if (!is_file($makeAuthorityPlan)) {
+    fail('docs/plans/2026-06-21-make-authority-isolation.md is missing');
+}
+
 $makefile = file_get_contents($root . '/Makefile');
 if (strpos($makefile, 'scripts/check-baseline.sh') === false) {
     fail('Makefile must run scripts/check-baseline.sh from make check');
 }
-$rootDeclaration = 'override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))';
+$rootDeclaration = <<<'MAKE'
+override ROOT := $(shell path='$(subst ','"'"',$(value MAKEFILE_LIST))'; path=$$(printf '%s' "$$path" | /usr/bin/sed 's/^ //'); [ -f "$$path" ] || exit 1; directory=$$(/usr/bin/dirname -- "$$path"); CDPATH= cd -- "$$directory" && /bin/pwd -P)
+MAKE;
 preg_match_all('/^(?:override[[:space:]]+)?ROOT[[:space:]]*[:+?]?=/m', $makefile, $rootAssignments);
 if (count($rootAssignments[0]) !== 1 || substr_count($makefile, $rootDeclaration) !== 1) {
     fail('Makefile must contain exactly one protected repository-root declaration');
 }
-$toolAndRootBlock = "PHP ?= php\nNODE ?= node\n" . $rootDeclaration;
-if (substr_count($makefile, $toolAndRootBlock) !== 1) {
-    fail('Makefile must keep PHP and Node overrides before the protected repository root');
+$toolContracts = array(
+    'PHP ?= php',
+    'NODE ?= node',
+    'override PHP := $(value PHP)',
+    'override NODE := $(value NODE)',
+    'export PHP NODE',
+    'override SHELL := /bin/sh',
+    'override .SHELLFLAGS := -c',
+);
+foreach ($toolContracts as $contract) {
+    if (substr_count($makefile, $contract) !== 1 || strpos($makefile, $contract) > strpos($makefile, $rootDeclaration)) {
+        fail('Makefile must keep authoritative PHP, Node, and shell settings before the protected repository root');
+    }
 }
 foreach (array(
-    '.PHONY: build check lint test verify',
+    '.DEFAULT_GOAL := check',
+    '.PHONY: __repository-make-authority build check lint root-test test verify',
+    '.SECONDEXPANSION:',
+    '$(error MAKEFLAGS must not be overridden for repository verification)',
+    '$(error non-executing or error-ignoring MAKEFLAGS are not supported for repository verification)',
+    '$(error MAKEFILES must be empty; repository verification requires this Makefile to be loaded alone)',
+    '$(error MAKEFILE_LIST must not be overridden)',
+    '$(error repository Makefile path could not be resolved)',
     'build: lint',
-    'verify: lint test build',
+    'verify: root-test lint test build',
     'check: verify',
-    '"$(ROOT)/scripts/check-baseline.sh"',
-    '"$(ROOT)/index.php"',
-    '"$(ROOT)/find.php"',
-    '"$(ROOT)/assets/app.js"',
-    '"$(ROOT)/tests/check-local-search.js"',
-    '"$(ROOT)/tests/check-find-pdo-boundary.php"',
-    '"$(ROOT)/tests/check-pdo-row-budget-mutations.php"',
-    '"$(ROOT)/tests/check-encoded-result-budget.php"',
-    '"$(ROOT)/tests/check-encoded-result-budget-mutations.php"',
+    '"$$ROOT/scripts/check-baseline.sh"',
+    '"$$ROOT/index.php"',
+    '"$$ROOT/find.php"',
+    '"$$ROOT/assets/app.js"',
+    '"$$ROOT/tests/check-local-search.js"',
+    '"$$ROOT/tests/check-find-pdo-boundary.php"',
+    '"$$ROOT/tests/check-pdo-row-budget-mutations.php"',
+    '"$$ROOT/tests/check-encoded-result-budget.php"',
+    '"$$ROOT/tests/check-encoded-result-budget-mutations.php"',
+    '"$$ROOT/scripts/test-makefile-root.sh"',
 ) as $contract) {
     if (strpos($makefile, $contract) === false) {
         fail('Makefile must keep root-independent tool contract: ' . $contract);
@@ -122,6 +148,28 @@ foreach (array(
 
 if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-14-make-root-override-protection.md') === false) {
     fail('README must index Make root override protection evidence');
+}
+
+if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-21-make-authority-isolation.md') === false) {
+    fail('README must index Make authority isolation evidence');
+}
+
+if (!is_file($makeAuthorityRunner) || !is_executable($makeAuthorityRunner)) {
+    fail('Make authority runner must exist and be executable');
+}
+$makeAuthorityBody = file_get_contents($makeAuthorityRunner);
+foreach (array(
+    '30 executed target/authority cases',
+    '1 literal-dollar tool case',
+    '1 raw tool Make-syntax rejection',
+    '2 MAKEFILE_LIST rejections',
+    '2 contained startup-boundary cases',
+    '10 mode-flag rejections',
+    'TECHPAY_BACKTICK_MARKER',
+) as $evidence) {
+    if (strpos($makeAuthorityBody, $evidence) === false) {
+        fail('Make authority runner contract is missing: ' . $evidence);
+    }
 }
 
 if (strpos(file_get_contents($root . '/README.md'), 'docs/plans/2026-06-14-utf8-search-response-byte-limit.md') === false) {

@@ -81,6 +81,8 @@ cd techcompanypay.com
   missing abort support, failures, input bounds, bounded HTML responses, and
   out-of-order response and busy-state ownership.
   Static contracts enforce local assets, CSP, and CI workflow boundaries.
+- `make root-test` exercises repository-root, shell, Make metadata, trusted
+  PHP/Node tool-value, and non-executing-mode authority without a database.
 - Query-string values rendered into the page or share metadata are bounded
   before escaping so long reflected inputs do not expand the response.
 - Search endpoint checks also require non-scalar POST fields to normalize to
@@ -159,6 +161,8 @@ unconfigured endpoint intentionally returns `No matches!`.
   region busy-state contract.
 - See `docs/plans/2026-06-14-make-root-override-protection.md` for authoritative
   repository-root selection across all Make aliases.
+- See `docs/plans/2026-06-21-make-authority-isolation.md` for quoted checkout
+  paths, fixed shell authority, Make mode rejection, and startup boundaries.
 - See `docs/plans/2026-06-14-utf8-search-response-byte-limit.md` for the
   byte-accurate asynchronous HTML response boundary.
 - See `docs/plans/2026-06-14-search-content-length-preflight.md` for early
