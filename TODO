@@ -1,4 +1,4 @@
 TODO:
 
-Migrate from EC2 to Heroku. 
-Utilize heroku techcompanypay.heroku.com.
+The historical EC2 and Heroku deployment notes are obsolete.
+Document a new deployment before configuring TCP_CANONICAL_URL or restoring data queries.

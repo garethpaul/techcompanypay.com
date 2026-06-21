@@ -69,8 +69,10 @@ cd techcompanypay.com
   responses before body reads, while measured bytes remain authoritative. The
   live results region exposes its busy state while the latest async request is
   active. Other browsers keep native submission.
-- Shared URLs preserve company-only, city-only, or combined filters and
-  automatically run either kind of prefilled search in supported browsers.
+- When `TCP_CANONICAL_URL` is configured with a controlled absolute HTTP(S)
+  application URL, shared URLs preserve company-only, city-only, or combined
+  filters and automatically run either kind of prefilled search in supported
+  browsers. Unconfigured or invalid canonical URLs omit `og:url` metadata.
 
 ## Testing and Verification
 
@@ -120,6 +122,9 @@ unconfigured endpoint intentionally returns `No matches!`.
 - Live result queries require `TCP_DB_DSN`, `TCP_DB_USER`, and
   `TCP_DB_PASSWORD` in the process environment. Keep real values in a local
   secret manager; do not commit credentials.
+- Optional share metadata reads `TCP_CANONICAL_URL` from the environment. Use
+  only an application URL you control; credentials, query strings, fragments,
+  non-HTTP(S) schemes, and malformed URLs are rejected.
 
 ## Security and Privacy Notes
 
