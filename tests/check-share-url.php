@@ -4,6 +4,35 @@ function fail($message) {
     exit(1);
 }
 
+function render_index_with_canonical_url($canonicalUrl, $query) {
+    $script = '$_GET = ' . var_export($query, true) . '; include "index.php";';
+    $descriptors = array(
+        1 => array('pipe', 'w'),
+        2 => array('pipe', 'w'),
+    );
+    $process = proc_open(
+        array(PHP_BINARY, '-d', 'display_errors=1', '-r', $script),
+        $descriptors,
+        $pipes,
+        dirname(__DIR__),
+        array('TCP_CANONICAL_URL' => $canonicalUrl)
+    );
+    if (!is_resource($process)) {
+        fail('unable to start isolated index render');
+    }
+
+    $output = stream_get_contents($pipes[1]);
+    $error = stream_get_contents($pipes[2]);
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+    $status = proc_close($process);
+    if ($status !== 0) {
+        fail('isolated index render failed: ' . trim($error));
+    }
+
+    return $output;
+}
+
 putenv('TCP_CANONICAL_URL');
 $_GET = array();
 ob_start();
@@ -57,6 +86,23 @@ $meta = tcp_share_meta(
 $expectedMeta = '<meta property="og:url" content="https://archive.example/?c=A%26B&amp;l=San%20Francisco"/>';
 if ($meta !== $expectedMeta) {
     fail('configured og:url metadata must preserve escaped filter encoding');
+}
+
+$configuredPage = render_index_with_canonical_url(
+    'https://archive.example/base',
+    array('c' => 'A&B', 'l' => 'San Francisco')
+);
+$configuredMeta = '<meta property="og:url" content="https://archive.example/base/?c=A%26B&amp;l=San%20Francisco"/>';
+if (substr_count($configuredPage, $configuredMeta) !== 1) {
+    fail('configured production render must emit exact escaped og:url metadata');
+}
+
+$invalidPage = render_index_with_canonical_url(
+    'javascript:alert(1)',
+    array('c' => 'Open AI', 'l' => 'New York')
+);
+if (strpos($invalidPage, 'property="og:url"') !== false) {
+    fail('configured invalid production render must omit og:url metadata');
 }
 
 echo "share URL checks passed" . PHP_EOL;
