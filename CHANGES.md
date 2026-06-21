@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-06-21
+
+- Isolated verification from caller-selected roots, shells, bypassing Make
+  modes, preload metadata, and additional Makefiles while preserving trusted
+  PHP and Node executable overrides.
+
 ## 2026-06-17
 
 - Added a shared 256 KiB bounded encoded database result response that measures

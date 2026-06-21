@@ -28,7 +28,7 @@ $contracts = array(
     'actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e',
     "node-version: '24'",
     'shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240',
-    'run: make check',
+    'run: /usr/bin/make check',
 );
 
 foreach ($contracts as $contract) {
