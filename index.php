@@ -18,7 +18,45 @@ function tcp_send_security_headers() {
 	}
 }
 
-function tcp_share_url($company, $city) {
+function tcp_canonical_url($environment = null) {
+	if ($environment === null) {
+		$value = getenv('TCP_CANONICAL_URL');
+	} else {
+		$value = array_key_exists('TCP_CANONICAL_URL', $environment)
+			? $environment['TCP_CANONICAL_URL']
+			: false;
+	}
+
+	if ($value === false || !is_string($value)) {
+		return null;
+	}
+
+	$value = trim($value);
+	if ($value === '' || filter_var($value, FILTER_VALIDATE_URL) === false) {
+		return null;
+	}
+
+	$parts = parse_url($value);
+	if (!is_array($parts) || !isset($parts['scheme'], $parts['host'])) {
+		return null;
+	}
+
+	$scheme = strtolower($parts['scheme']);
+	if (($scheme !== 'http' && $scheme !== 'https') ||
+		isset($parts['user']) || isset($parts['pass']) ||
+		array_key_exists('query', $parts) || array_key_exists('fragment', $parts)) {
+		return null;
+	}
+
+	return rtrim($value, '/') . '/';
+}
+
+function tcp_share_url($company, $city, $environment = null) {
+	$canonicalUrl = tcp_canonical_url($environment);
+	if ($canonicalUrl === null) {
+		return null;
+	}
+
 	$params = array();
 	if ($company !== '') {
 		$params['c'] = $company;
@@ -27,7 +65,16 @@ function tcp_share_url($company, $city) {
 		$params['l'] = $city;
 	}
 	$query = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
-	return 'https://techcompanypay.com/' . ($query === '' ? '' : '?' . $query);
+	return $canonicalUrl . ($query === '' ? '' : '?' . $query);
+}
+
+function tcp_share_meta($company, $city, $environment = null) {
+	$shareUrl = tcp_share_url($company, $city, $environment);
+	if ($shareUrl === null) {
+		return '';
+	}
+
+	return '<meta property="og:url" content="' . tcp_html($shareUrl) . '"/>';
 }
 
 tcp_send_security_headers();
@@ -36,7 +83,6 @@ $company = tcp_get('c');
 $city = tcp_get('l');
 $company_html = tcp_html($company);
 $city_html = tcp_html($city);
-$share_url_html = tcp_html(tcp_share_url($company, $city));
 ?>
 <!doctype html>
 <html lang="en" xmlns:og="http://ogp.me/ns#">
@@ -45,7 +91,7 @@ $share_url_html = tcp_html(tcp_share_url($company, $city));
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
    <title>TechCompanyPay</title>
 	<meta property="og:title" content="TechCompanyPay"/>
-    <meta property="og:url" content="<?php echo $share_url_html; ?>"/>
+    <?php echo tcp_share_meta($company, $city); ?>
     <meta property="og:site_name" content="TechCompanyPay"/>
     <meta property="og:description" content="A hack showing the titles and average pay of most of the tech giants employees with LinkedIn profiles."/>
 	
