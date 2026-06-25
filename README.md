@@ -90,7 +90,8 @@ cd techcompanypay.com
 - Search endpoint checks also require non-scalar POST fields to normalize to
   empty strings before legacy query handling.
 - Search endpoint checks also require database salary values to be formatted
-  only after numeric validation, with invalid values displayed as `$0`.
+  only after numeric and finite-value validation, with invalid or overflowed
+  values displayed as `$0`.
 - Search endpoint checks require the PDO prepared statement boundary to use
   exception mode, associative rows, native prepares, and named `term`/`city`
   parameters without a live database driver. They also require a positive row
@@ -168,6 +169,8 @@ unconfigured endpoint intentionally returns `No matches!`.
   repository-root selection across all Make aliases.
 - See `docs/plans/2026-06-21-make-authority-isolation.md` for quoted checkout
   paths, fixed shell authority, Make mode rejection, and startup boundaries.
+- See `docs/plans/2026-06-25-finite-salary-format.md` for overflow-safe salary
+  conversion and non-finite value regressions.
 - See `docs/plans/2026-06-14-utf8-search-response-byte-limit.md` for the
   byte-accurate asynchronous HTML response boundary.
 - See `docs/plans/2026-06-14-search-content-length-preflight.md` for early

@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-06-25
+
+- Rejected infinite and NaN salary values after numeric conversion so
+  overflowed scientific notation cannot render non-currency output.
+- Added PHP regressions for positive/negative overflow, infinities, and NaN.
+
 ## 2026-06-21
 
 - Isolated verification from caller-selected roots, shells, bypassing Make

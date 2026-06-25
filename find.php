@@ -24,7 +24,12 @@ function tcp_linkedin_title($title) {
 }
 
 function tcp_salary($value) {
-  return is_numeric($value) ? number_format((float) $value) : '0';
+  if (!is_numeric($value)) {
+    return '0';
+  }
+
+  $numericSalary = (float) $value;
+  return is_finite($numericSalary) ? number_format($numericSalary) : '0';
 }
 
 function tcp_database_config($environment = null) {
