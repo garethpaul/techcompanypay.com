@@ -25,4 +25,10 @@ if (tcp_salary(array('nested' => '1000')) !== '0') {
     fail('non-scalar salary values should format as 0');
 }
 
+foreach (array('1e309', '-1e309', INF, -INF, NAN) as $value) {
+    if (tcp_salary($value) !== '0') {
+        fail('non-finite salary values should format as 0');
+    }
+}
+
 echo "find salary format checks passed" . PHP_EOL;

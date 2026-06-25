@@ -300,8 +300,9 @@ $findSource = file_get_contents($root . '/find.php');
 if (strpos($findSource, 'function tcp_salary($value)') === false) {
     fail('find.php must centralize salary formatting');
 }
-if (strpos($findSource, 'is_numeric($value) ? number_format((float) $value) : \'0\'') === false) {
-    fail('find.php must format only numeric salary values');
+if (strpos($findSource, 'if (!is_numeric($value))') === false ||
+    strpos($findSource, 'return is_finite($numericSalary) ? number_format($numericSalary) : \'0\';') === false) {
+    fail('find.php must format only finite numeric salary values');
 }
 if (strpos($findSource, 'number_format($salary)') !== false) {
     fail('find.php must not pass raw database salary values to number_format');
