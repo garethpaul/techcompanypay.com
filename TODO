@@ -1,4 +1,8 @@
 TODO:
 
-The historical EC2 and Heroku deployment notes are obsolete.
-Document a new deployment before configuring TCP_CANONICAL_URL or restoring data queries.
+No production deployment or salary dataset is maintained. The historical EC2
+and Heroku notes are obsolete.
+
+Before configuring a public TCP_CANONICAL_URL or restoring data queries,
+document the schema, source and removal policy, freshness expectations,
+deployment design, operational ownership, and rollback path.

@@ -23,6 +23,7 @@ $pdoBoundaryPlan = $root . '/docs/plans/2026-06-15-pdo-database-boundary.md';
 $pdoRowBudgetPlan = $root . '/docs/plans/2026-06-17-bounded-pdo-result-rows.md';
 $encodedResultBudgetPlan = $root . '/docs/plans/2026-06-17-bounded-encoded-result-response.md';
 $makeAuthorityPlan = $root . '/docs/plans/2026-06-21-make-authority-isolation.md';
+$archiveStatusPlan = $root . '/docs/plans/2026-06-26-archive-status.md';
 $makeAuthorityRunner = $root . '/scripts/test-makefile-root.sh';
 
 if (!is_file($canonical)) {
@@ -91,6 +92,41 @@ if (!is_file($pdoRowBudgetPlan)) {
 
 if (!is_file($makeAuthorityPlan)) {
     fail('docs/plans/2026-06-21-make-authority-isolation.md is missing');
+}
+
+if (!is_file($archiveStatusPlan)) {
+    fail('docs/plans/2026-06-26-archive-status.md is missing');
+}
+
+$readme = file_get_contents($root . '/README.md');
+foreach (array(
+    '## Project Status',
+    'archived prototype',
+    'Local demonstration and repository verification remain supported.',
+    'No hosted production service or production database is maintained.',
+    'documented schema, data governance, and deployment design',
+) as $statusContract) {
+    if (strpos($readme, $statusContract) === false) {
+        fail('README project-status contract is missing: ' . $statusContract);
+    }
+}
+
+$vision = file_get_contents($root . '/VISION.md');
+if (strpos($vision, 'Keep the archived local-demonstration boundary') === false) {
+    fail('VISION must keep the archived local-demonstration boundary');
+}
+if (strpos($vision, 'Add setup notes or archive status to the README') !== false) {
+    fail('VISION must not retain the completed archive/setup roadmap item');
+}
+
+$todo = file_get_contents($root . '/TODO');
+foreach (array(
+    'No production deployment or salary dataset is maintained.',
+    'deployment design, operational ownership, and rollback path',
+) as $revivalContract) {
+    if (strpos($todo, $revivalContract) === false) {
+        fail('TODO production-revival contract is missing: ' . $revivalContract);
+    }
 }
 
 $makefile = file_get_contents($root . '/Makefile');
