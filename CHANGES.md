@@ -34,6 +34,10 @@ verification surface from unsupported production hosting, data, and deployment.
 - Ten hostile mutations removing the plan or weakening README, roadmap, and
   revival prerequisites were rejected by `scripts/check-baseline.sh`.
 - `git diff --check` passed.
+- `codex review --base origin/master` was attempted but could not authenticate
+  to the external review service (HTTP 401); manual diff review found no
+  actionable issue, and the run continued under the standing instruction to
+  skip skill authentication failures.
 
 ### Bugs / findings
 - P2: The README already described an archived prototype and local setup, but
@@ -41,7 +45,8 @@ verification surface from unsupported production hosting, data, and deployment.
   minimum prerequisites for restoring production data or deployment.
 
 ### Blockers
-- None.
+- External Codex review authentication is unavailable in this environment; it
+  does not block the locally and hosted-validated documentation change.
 
 ### Next action
 - Open the PR, run Codex review, and merge only after hosted checks pass.
