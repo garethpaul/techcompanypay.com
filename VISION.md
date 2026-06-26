@@ -37,6 +37,8 @@ Priority:
 - Deny unused browser device APIs from PHP entry points
 - Constrain legacy page fetches with a Content-Security-Policy header
 - Keep the page render and runtime independent of third-party assets
+- Keep the archived local-demonstration boundary and production revival
+  prerequisites explicit
 - Keep completed maintenance plans under `docs/plans`
 - Keep fixed-runner PHP and Node verification explicit in GitHub Actions
 - Keep hosted checkout credential-free and the workflow surface singular
@@ -50,7 +52,6 @@ Priority:
 
 Next priorities:
 
-- Add setup notes or archive status to the README
 - Document the historical schema before restoring production queries
 - Keep all restored queries parameterized and all rendered values escaped
 - Document data sources, freshness, and removal policy

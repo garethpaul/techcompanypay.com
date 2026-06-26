@@ -1,5 +1,56 @@
 # Changes
 
+## 2026-06-26 00:02 PDT - P2 - Define archived project status
+
+### Summary
+The repository now distinguishes its supported local demonstration and
+verification surface from unsupported production hosting, data, and deployment.
+
+### Work completed
+- Added an explicit README project-status section without changing executable
+  PHP or browser behavior.
+- Documented the missing schema, data-governance, deployment, ownership, and
+  rollback prerequisites for any future production revival.
+- Aligned `TODO` and `VISION.md`, closing the stale archive/setup roadmap item.
+- Added PHP and shell contracts requiring the status boundary and completed
+  plan evidence.
+
+### Threads
+- None; work completed directly in this maintenance cycle.
+
+### Files changed
+- `README.md`, `TODO`, and `VISION.md` — status, revival prerequisites, and
+  roadmap alignment.
+- `tests/check-docs-plans.php` and `scripts/check-baseline.sh` — fail-closed
+  documentation contracts.
+- `docs/plans/2026-06-26-archive-status.md` and `CHANGES.md` — implementation
+  plan and cycle evidence.
+
+### Validation
+- Red phase: `scripts/check-baseline.sh` rejected the missing `Project Status`
+  contract before the README change.
+- Containerized `make check` passed on Node 24.18.0 and PHP 8.2.31, including
+  PHP syntax, behavior, security, workflow, JavaScript, and authority gates.
+- Ten hostile mutations removing the plan or weakening README, roadmap, and
+  revival prerequisites were rejected by `scripts/check-baseline.sh`.
+- `git diff --check` passed.
+- `codex review --base origin/master` was attempted but could not authenticate
+  to the external review service (HTTP 401); manual diff review found no
+  actionable issue, and the run continued under the standing instruction to
+  skip skill authentication failures.
+
+### Bugs / findings
+- P2: The README already described an archived prototype and local setup, but
+  the roadmap still treated that boundary as unfinished and did not state the
+  minimum prerequisites for restoring production data or deployment.
+
+### Blockers
+- External Codex review authentication is unavailable in this environment; it
+  does not block the locally and hosted-validated documentation change.
+
+### Next action
+- Open the PR, run Codex review, and merge only after hosted checks pass.
+
 ## 2026-06-25
 
 - Required POST before the salary search endpoint can reach database

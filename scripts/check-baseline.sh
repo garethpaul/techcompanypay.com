@@ -3,6 +3,8 @@ set -eu
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 README="$ROOT_DIR/README.md"
+VISION="$ROOT_DIR/VISION.md"
+TODO_FILE="$ROOT_DIR/TODO"
 MAKEFILE="$ROOT_DIR/Makefile"
 GITIGNORE="$ROOT_DIR/.gitignore"
 DOCS_PLANS="$ROOT_DIR/docs/plans"
@@ -52,9 +54,41 @@ for path in \
 	"docs/plans/2026-06-17-bounded-encoded-result-response.md" \
   "docs/plans/2026-06-09-scripted-baseline-check.md" \
   "docs/plans/2026-06-21-make-authority-isolation.md" \
+  "docs/plans/2026-06-26-archive-status.md" \
   "scripts/test-makefile-root.sh" \
   "scripts/check-baseline.sh"; do
   require_file "$path"
+done
+
+if ! grep -Fq 'Keep the archived local-demonstration boundary' "$VISION"; then
+  printf '%s\n' 'VISION must keep the archived local-demonstration boundary.' >&2
+  exit 1
+fi
+
+if grep -Fq 'Add setup notes or archive status to the README' "$VISION"; then
+  printf '%s\n' 'VISION must not retain the completed archive/setup roadmap item.' >&2
+  exit 1
+fi
+
+for revival_contract in \
+  'No production deployment or salary dataset is maintained.' \
+  'deployment design, operational ownership, and rollback path'; do
+  if ! grep -Fq "$revival_contract" "$TODO_FILE"; then
+    printf '%s\n' "TODO production-revival contract is missing: $revival_contract" >&2
+    exit 1
+  fi
+done
+
+for project_status_contract in \
+  '## Project Status' \
+  'archived prototype' \
+  'Local demonstration and repository verification remain supported.' \
+  'No hosted production service or production database is maintained.' \
+  'documented schema, data governance, and deployment design'; do
+  if ! grep -Fq "$project_status_contract" "$README"; then
+    printf '%s\n' "README project-status contract is missing: $project_status_contract" >&2
+    exit 1
+  fi
 done
 
 if ! grep -Fq "scripts/check-baseline.sh" "$MAKEFILE"; then

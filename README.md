@@ -12,6 +12,19 @@ keeping its public-data disclaimer and legacy deployment constraints explicit.
 The maintained surface uses PHP, repository-owned JavaScript and CSS, shell
 verification, and PHP contract tests.
 
+## Project Status
+
+This repository is an archived prototype.
+Local demonstration and repository verification remain supported.
+No hosted production service or production database is maintained.
+
+The checked-in SQL constants are intentionally blank, and the repository does
+not contain the historical production schema, source dataset, freshness
+guarantee, removal workflow, credentials, or deployment runbook. Configuring
+`TCP_DB_DSN` alone does not make the application production-ready. Any revival
+requires a documented schema, data governance, and deployment design before
+queries or real salary data are restored.
+
 ## Repository Contents
 
 - `README.md` - project overview and local usage notes
