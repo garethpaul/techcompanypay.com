@@ -25,8 +25,9 @@ foreach (array(
     "method: 'POST'",
     'signal: requestController.signal',
     "window.fetch(form.action, options)",
-    "company.value.slice(0, 100)",
-    "city.value.slice(0, 100)",
+    'function boundedInputValue(value)',
+    "body.append('search_term', boundedInputValue(company.value))",
+    "body.append('city', boundedInputValue(city.value))",
     "results.setAttribute('aria-busy', 'true')",
     "requestNumber === latestRequest",
     "requestController.abort()",
@@ -76,6 +77,7 @@ foreach (array(
     'prefilled search should mark results busy',
     'missing Blob should keep native submission',
     'missing Blob should not start an asynchronous submit or prefilled search',
+    'asynchronous search should preserve a complete boundary code point',
 ) as $contract) {
     if (strpos($behaviorSource, $contract) === false) {
         fail('tests/check-local-search.js must keep required behavior coverage: ' . $contract);

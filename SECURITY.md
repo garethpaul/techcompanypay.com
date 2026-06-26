@@ -45,6 +45,7 @@ Dependency updates should come from trusted package managers and should keep loc
 The browser search enhancement is enabled only when its request can be aborted
 and timed out. Browsers without `AbortController` retain native form submission
 instead of entering an unbounded asynchronous state.
+Search inputs are bounded to 100 complete Unicode code points across PHP and asynchronous JavaScript paths.
 Successful async responses must also declare `text/html` and remain at or below
 the 256 KiB UTF-8 byte response limit before the fragment can cross the
 `innerHTML` boundary. A strict Content-Length preflight rejects canonical

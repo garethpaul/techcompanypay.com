@@ -22,8 +22,9 @@ function run_budget_test($test, $source) {
 
 $root = dirname(__DIR__);
 $source = file_get_contents($root . '/find.php');
+$input = file_get_contents($root . '/input.php');
 $test = $root . '/tests/check-encoded-result-budget.php';
-if ($source === false || !is_file($test)) {
+if ($source === false || $input === false || !is_file($test)) {
     fail('unable to read encoded result byte-budget sources');
 }
 
@@ -58,7 +59,9 @@ if (!mkdir($temporaryRoot, 0700, true)) {
 $failure = null;
 try {
     $temporarySource = $temporaryRoot . '/find.php';
+    $temporaryInput = $temporaryRoot . '/input.php';
     write_exact_file($temporarySource, $source);
+    write_exact_file($temporaryInput, $input);
 
     list($controlStatus, $controlOutput) = run_budget_test($test, $temporarySource);
     if ($controlStatus !== 0) {
@@ -84,6 +87,9 @@ try {
 } finally {
     if (isset($temporarySource) && is_file($temporarySource)) {
         unlink($temporarySource);
+    }
+    if (isset($temporaryInput) && is_file($temporaryInput)) {
+        unlink($temporaryInput);
     }
     if (is_dir($temporaryRoot)) {
         rmdir($temporaryRoot);

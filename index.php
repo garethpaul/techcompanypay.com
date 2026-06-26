@@ -1,6 +1,8 @@
 <?php
+require_once __DIR__ . '/input.php';
+
 function tcp_get($key) {
-	return isset($_GET[$key]) && is_scalar($_GET[$key]) ? substr((string) $_GET[$key], 0, 100) : '';
+	return isset($_GET[$key]) && is_scalar($_GET[$key]) ? tcp_bounded_utf8((string) $_GET[$key]) : '';
 }
 
 function tcp_html($value) {

@@ -21,8 +21,9 @@ function run_boundary_test($path) {
 
 $root = dirname(__DIR__);
 $source = file_get_contents($root . '/find.php');
+$input = file_get_contents($root . '/input.php');
 $test = file_get_contents($root . '/tests/check-find-pdo-boundary.php');
-if ($source === false || $test === false) {
+if ($source === false || $input === false || $test === false) {
     fail('unable to read PDO row budget sources');
 }
 
@@ -54,8 +55,10 @@ if (!mkdir($temporaryTests, 0700, true)) {
 $failure = null;
 try {
     $temporarySource = $temporaryRoot . '/find.php';
+    $temporaryInput = $temporaryRoot . '/input.php';
     $temporaryTest = $temporaryTests . '/check-find-pdo-boundary.php';
     write_exact_file($temporarySource, $source);
+    write_exact_file($temporaryInput, $input);
     write_exact_file($temporaryTest, $test);
 
     list($controlStatus, $controlOutput) = run_boundary_test($temporaryTest);
@@ -84,6 +87,7 @@ try {
     foreach (array(
         $temporaryTests . '/check-find-pdo-boundary.php',
         $temporaryRoot . '/find.php',
+        $temporaryRoot . '/input.php',
     ) as $path) {
         if (file_exists($path)) {
             unlink($path);

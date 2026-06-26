@@ -12,6 +12,8 @@ keeping its public-data disclaimer and legacy deployment constraints explicit.
 The maintained surface uses PHP, repository-owned JavaScript and CSS, shell
 verification, and PHP contract tests.
 
+Search inputs are bounded to 100 complete Unicode code points across PHP and asynchronous JavaScript paths.
+
 ## Project Status
 
 This repository is an archived prototype.

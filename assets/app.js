@@ -43,6 +43,29 @@
     return Number(value);
   }
 
+  function boundedInputValue(value) {
+    var result = '';
+    var offset = 0;
+    var characters = 0;
+    while (offset < value.length && characters < 100) {
+      var first = value.charCodeAt(offset);
+      var width = 1;
+      if (first >= 0xD800 && first <= 0xDBFF) {
+        var second = value.charCodeAt(offset + 1);
+        if (!(second >= 0xDC00 && second <= 0xDFFF)) {
+          return '';
+        }
+        width = 2;
+      } else if (first >= 0xDC00 && first <= 0xDFFF) {
+        return '';
+      }
+      result += value.slice(offset, offset + width);
+      offset += width;
+      characters += 1;
+    }
+    return result;
+  }
+
   function requestSearch() {
     var requestNumber = latestRequest + 1;
     latestRequest = requestNumber;
@@ -55,8 +78,8 @@
     var requestTimedOut = false;
     activeRequest = requestController;
     var body = new window.URLSearchParams();
-    body.append('search_term', company.value.slice(0, 100));
-    body.append('city', city.value.slice(0, 100));
+    body.append('search_term', boundedInputValue(company.value));
+    body.append('city', boundedInputValue(city.value));
 
     results.textContent = 'Searching salary data…';
     submit.disabled = true;

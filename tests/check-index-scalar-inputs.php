@@ -35,4 +35,10 @@ if (tcp_get('c') !== str_repeat('A', 100)) {
     fail('scalar query parameters should be bounded before rendering or sharing');
 }
 
+$unicodeBoundary = str_repeat('A', 99) . "😀";
+$_GET = array('c' => $unicodeBoundary . 'trailing');
+if (tcp_get('c') !== $unicodeBoundary) {
+    fail('scalar query parameters should preserve complete Unicode characters at the limit');
+}
+
 echo "index scalar input checks passed" . PHP_EOL;

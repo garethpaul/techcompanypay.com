@@ -38,6 +38,12 @@ if (tcp_post_value('city') !== 'San Francisco') {
     fail('scalar POST city values should still be returned');
 }
 
+$unicodeBoundary = str_repeat('A', 99) . "😀";
+$_POST = array('search_term' => $unicodeBoundary . 'trailing');
+if (tcp_post_value('search_term') !== $unicodeBoundary) {
+    fail('scalar POST values should preserve complete Unicode characters at the limit');
+}
+
 restore_error_handler();
 
 echo "find scalar input checks passed" . PHP_EOL;
