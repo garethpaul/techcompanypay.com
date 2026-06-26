@@ -30,6 +30,7 @@ for path in \
 	"assets/app.css" \
 	"assets/app.js" \
   "find.php" \
+  "input.php" \
   "index.php" \
   "tests/check-docs-plans.php" \
 	"tests/check-external-assets.php" \
@@ -55,9 +56,18 @@ for path in \
   "docs/plans/2026-06-09-scripted-baseline-check.md" \
   "docs/plans/2026-06-21-make-authority-isolation.md" \
   "docs/plans/2026-06-26-archive-status.md" \
+  "docs/plans/2026-06-26-unicode-input-boundary.md" \
   "scripts/test-makefile-root.sh" \
   "scripts/check-baseline.sh"; do
   require_file "$path"
+done
+
+unicode_input_contract='Search inputs are bounded to 100 complete Unicode code points across PHP and asynchronous JavaScript paths.'
+for document in "$ROOT_DIR/AGENTS.md" "$README" "$ROOT_DIR/SECURITY.md" "$VISION" "$ROOT_DIR/CHANGES.md"; do
+  if ! grep -Fq "$unicode_input_contract" "$document"; then
+    printf '%s\n' "Unicode input boundary contract is missing from: $document" >&2
+    exit 1
+  fi
 done
 
 if ! grep -Fq 'Keep the archived local-demonstration boundary' "$VISION"; then

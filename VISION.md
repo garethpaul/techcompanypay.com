@@ -19,6 +19,7 @@ Priority:
 - Keep backend connection failures generic in user-facing responses
 - Treat non-scalar request parameters as empty input before rendering
 - Bound reflected query input length before rendering or sharing
+- Search inputs are bounded to 100 complete Unicode code points across PHP and asynchronous JavaScript paths.
 - Treat non-scalar search POST fields as empty input before query handling
 - Require POST before the salary endpoint reaches database configuration
 - Format salary output only after numeric and finite-value validation

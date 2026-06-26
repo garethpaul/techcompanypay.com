@@ -55,6 +55,7 @@ __repository-make-authority::
 
 lint:
 	"$$PHP" -l "$$ROOT/index.php"
+	"$$PHP" -l "$$ROOT/input.php"
 	"$$PHP" -l "$$ROOT/find.php"
 	"$$NODE" --check "$$ROOT/assets/app.js"
 

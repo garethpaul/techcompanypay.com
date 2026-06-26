@@ -372,6 +372,19 @@ async function run() {
   assert.strictEqual(cityOnlyRequests[0].options.body.get('city'), 'New York');
   assert.strictEqual(cityOnlyHarness.elements.search_results.getAttribute('aria-busy'), 'true', 'prefilled search should mark results busy');
 
+  var unicodeBoundary = 'A'.repeat(99) + '😀';
+  var unicodeRequests = [];
+  var unicodeHarness = createHarness({
+    company: unicodeBoundary + 'trailing',
+    fetch: function (url, options) {
+      unicodeRequests.push({url: url, options: options});
+      return deferred().promise;
+    }
+  });
+  assert.strictEqual(unicodeRequests.length, 1, 'prefilled Unicode input should search automatically');
+  assert.strictEqual(unicodeRequests[0].options.body.get('search_term'), unicodeBoundary, 'asynchronous search should preserve a complete boundary code point');
+  assert.strictEqual(unicodeHarness.elements.search_results.getAttribute('aria-busy'), 'true');
+
   console.log('local search behavior checks passed');
 }
 

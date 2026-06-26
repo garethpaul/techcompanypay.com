@@ -24,6 +24,7 @@ $pdoRowBudgetPlan = $root . '/docs/plans/2026-06-17-bounded-pdo-result-rows.md';
 $encodedResultBudgetPlan = $root . '/docs/plans/2026-06-17-bounded-encoded-result-response.md';
 $makeAuthorityPlan = $root . '/docs/plans/2026-06-21-make-authority-isolation.md';
 $archiveStatusPlan = $root . '/docs/plans/2026-06-26-archive-status.md';
+$unicodeInputBoundaryPlan = $root . '/docs/plans/2026-06-26-unicode-input-boundary.md';
 $makeAuthorityRunner = $root . '/scripts/test-makefile-root.sh';
 
 if (!is_file($canonical)) {
@@ -98,6 +99,10 @@ if (!is_file($archiveStatusPlan)) {
     fail('docs/plans/2026-06-26-archive-status.md is missing');
 }
 
+if (!is_file($unicodeInputBoundaryPlan)) {
+    fail('docs/plans/2026-06-26-unicode-input-boundary.md is missing');
+}
+
 $readme = file_get_contents($root . '/README.md');
 foreach (array(
     '## Project Status',
@@ -169,6 +174,7 @@ foreach (array(
     '"$$ROOT/scripts/check-baseline.sh"',
     '"$$ROOT/index.php"',
     '"$$ROOT/find.php"',
+    '"$$ROOT/input.php"',
     '"$$ROOT/assets/app.js"',
     '"$$ROOT/tests/check-local-search.js"',
     '"$$ROOT/tests/check-find-pdo-boundary.php"',
@@ -413,8 +419,27 @@ foreach (array(
 }
 
 $indexSource = file_get_contents($root . '/index.php');
-if (strpos($indexSource, 'substr((string) $_GET[$key], 0, 100)') === false) {
-    fail('index.php must bound scalar query values before rendering or sharing');
+$findSource = file_get_contents($root . '/find.php');
+$inputSource = file_get_contents($root . '/input.php');
+foreach (array(
+    "require_once __DIR__ . '/input.php';",
+    'tcp_bounded_utf8((string) $_GET[$key])',
+) as $contract) {
+    if (strpos($indexSource, $contract) === false) {
+        fail('index.php must keep Unicode input boundary contract: ' . $contract);
+    }
+}
+if (strpos($findSource, 'strip_tags(tcp_bounded_utf8((string) $_POST[$key]))') === false) {
+    fail('find.php must bound complete Unicode input before query handling');
+}
+foreach (array(
+    'function tcp_bounded_utf8($value, $maxCharacters = 100)',
+    "\$character . '{0,' . \$maxCharacters . '})/s'",
+    "preg_match_all('/' . \$character . '/s', \$prefix) === \$maxCharacters",
+) as $contract) {
+    if (strpos($inputSource, $contract) === false) {
+        fail('input.php must keep bounded UTF-8 contract: ' . $contract);
+    }
 }
 if (strpos($indexSource, 'http_build_query($params, \'\', \'&\', PHP_QUERY_RFC3986)') === false) {
     fail('index.php must build share URLs from independent encoded filters');

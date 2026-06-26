@@ -33,6 +33,7 @@ database behavior and offline response-safety tests.
 ## Workflow
 
 1. Read the README, Makefile, PHP entry points, and relevant tests.
-2. Run the narrowest behavior test first, then `make check`.
-3. Update tests and documentation with behavior or workflow changes.
-4. Record unavailable live database validation as a remaining risk.
+2. Search inputs are bounded to 100 complete Unicode code points across PHP and asynchronous JavaScript paths.
+3. Run the narrowest behavior test first, then `make check`.
+4. Update tests and documentation with behavior or workflow changes.
+5. Record unavailable live database validation as a remaining risk.

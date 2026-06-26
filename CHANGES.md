@@ -1,5 +1,59 @@
 # Changes
 
+## 2026-06-26 12:40 PDT - P1 - Preserve Unicode input boundaries
+
+### Summary
+Search inputs are bounded to 100 complete Unicode code points across PHP and asynchronous JavaScript paths.
+
+### Work completed
+- Replaced byte and UTF-16 code-unit truncation with shared PHP and browser
+  boundaries that preserve complete Unicode scalar values.
+- Rejected malformed UTF-8 and unpaired JavaScript surrogates before search
+  values can reach rendering, URL generation, or request submission.
+- Added exact-boundary regressions and repository contracts for PHP GET, PHP
+  POST, and asynchronous JavaScript search paths.
+
+### Threads
+- None; work completed directly in this maintenance cycle.
+
+### Files changed
+- `input.php`, `index.php`, `find.php`, and `assets/app.js` — bounded Unicode
+  input handling.
+- `tests/`, `Makefile`, and `scripts/check-baseline.sh` — behavioral, mutation,
+  syntax, and repository-contract coverage.
+- `AGENTS.md`, `README.md`, `SECURITY.md`, `VISION.md`, and
+  `docs/plans/2026-06-26-unicode-input-boundary.md` — maintained boundary and
+  implementation evidence.
+
+### Validation
+- Red phase reproduced PHP byte-splitting and JavaScript surrogate-splitting
+  at the documented 100-character boundary.
+- Focused PHP GET, PHP POST, and browser regressions passed.
+- Containerized `PHP=/tmp/php84 make check` passed on PHP 8.4.22 with Node
+  18.19.1, including syntax, behavior, security, workflow, and authority gates.
+- Three hostile mutations restoring PHP byte truncation, JavaScript UTF-16
+  slicing, or removing the documented contract were rejected.
+- Hosted verification passed on PHP 8.2, 8.4, and 8.5; CodeQL action and
+  JavaScript analyses also passed.
+- `git diff --check` passed.
+- `/home/gpj/.codex/skills/codex-review/scripts/codex-review --mode branch`
+  targeted `origin/master` but could not authenticate to the external review
+  service (HTTP 401). Immutable manual review of the pushed commit found no
+  actionable issue.
+
+### Bugs / findings
+- P1: Valid 100-code-point input ending in a supplementary Unicode character
+  was corrupted by PHP byte truncation and JavaScript UTF-16 slicing.
+
+### Blockers
+- No live production database or hosted service exists; validation covers the
+  supported local demonstration and repository verification surface.
+- External Codex review authentication is unavailable in this environment; it
+  does not block the locally and hosted-validated fix.
+
+### Next action
+- Open the PR, run Codex review, and merge only after hosted checks pass.
+
 ## 2026-06-26 00:02 PDT - P2 - Define archived project status
 
 ### Summary
