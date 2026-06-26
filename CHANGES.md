@@ -2,6 +2,10 @@
 
 ## 2026-06-25
 
+- Required POST before the salary search endpoint can reach database
+  configuration or creation, with generic HTTP 405 responses for other methods.
+- Added containerized method-boundary coverage for GET, HEAD, PUT, DELETE,
+  malformed metadata, and the retained POST path.
 - Rejected infinite and NaN salary values after numeric conversion so
   overflowed scientific notation cannot render non-currency output.
 - Added PHP regressions for positive/negative overflow, infinities, and NaN.

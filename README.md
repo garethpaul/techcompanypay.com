@@ -58,7 +58,9 @@ cd techcompanypay.com
   `http://127.0.0.1:8000/`.
 - `find.php` is the legacy search endpoint. Its PDO prepared statement boundary
   reads `TCP_DB_DSN`, `TCP_DB_USER`, and `TCP_DB_PASSWORD` from the environment
-  before any database access. Bounded incremental PDO result rows prevent a
+  before any database access. It accepts only POST requests; other methods fail
+  before configuration or database creation with HTTP 405 and the existing
+  generic response. Bounded incremental PDO result rows prevent a
   query from materializing an unbounded result set before rendering. A bounded encoded database result response also rejects a combined title/group payload
   above 256 KiB before any table output is emitted.
 - The search form submits directly to `find.php` without JavaScript and uses a

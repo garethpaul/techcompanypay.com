@@ -54,6 +54,9 @@ request, so a superseded response cannot announce newer content as settled.
 The PDO prepared statement boundary reads database settings only from the
 process environment, disables emulated prepares, binds normalized term and city
 values, and keeps connection or query exceptions out of user-facing responses.
+The salary endpoint requires an exact POST method before it reads database
+configuration or creates a connection; other and malformed methods return a
+generic HTTP 405 response with `Allow: POST`.
 Bounded incremental PDO result rows prevent all-at-once result materialization
 and reject overflow without returning a partial salary table.
 Salary formatting rejects non-finite floats after numeric conversion, so
