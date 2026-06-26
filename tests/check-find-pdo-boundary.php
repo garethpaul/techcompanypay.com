@@ -64,7 +64,7 @@ class FakeDatabase {
 
 function capture_endpoint($factory, $environment, $titleSql, $groupSql) {
     ob_start();
-    tcp_run_find_endpoint($factory, $environment, $titleSql, $groupSql);
+    tcp_run_find_endpoint($factory, $environment, $titleSql, $groupSql, array('REQUEST_METHOD' => 'POST'));
     return ob_get_clean();
 }
 

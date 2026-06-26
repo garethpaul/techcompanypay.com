@@ -21,6 +21,8 @@ database behavior and offline response-safety tests.
   configuration, and named term/city parameters.
 - Preserve bounded incremental PDO result rows and fail closed rather than
   returning a partial salary table when the row budget is exceeded.
+- Preserve the POST-only search endpoint gate before database configuration or
+  access, including generic 405 responses for other methods.
 - Preserve the bounded encoded database result response and its shared 256 KiB
   title/group budget before any endpoint output is emitted.
 - Escape reflected HTML, validate salary values, and retain the checked response

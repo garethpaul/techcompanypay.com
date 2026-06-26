@@ -36,6 +36,8 @@ for path in \
 	"tests/check-share-url.php" \
   "tests/check-security-headers.php" \
 	"tests/check-find-pdo-boundary.php" \
+	"tests/check-find-request-method.php" \
+	"tests/check-find-request-method-mutations.php" \
 		"tests/check-pdo-row-budget-mutations.php" \
 		"tests/check-encoded-result-budget.php" \
 		"tests/check-encoded-result-budget-mutations.php" \

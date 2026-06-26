@@ -116,7 +116,7 @@ $_POST = array('search_term' => 'engineering', 'city' => 'remote');
 ob_start();
 tcp_run_find_endpoint(function () use ($database) {
     return $database;
-}, $environment, 'title sql', 'group sql');
+}, $environment, 'title sql', 'group sql', array('REQUEST_METHOD' => 'POST'));
 $output = ob_get_clean();
 if ($output !== 'No matches!') {
     fail('combined encoded response overflow must fail closed without partial output');

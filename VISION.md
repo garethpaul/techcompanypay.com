@@ -20,6 +20,7 @@ Priority:
 - Treat non-scalar request parameters as empty input before rendering
 - Bound reflected query input length before rendering or sharing
 - Treat non-scalar search POST fields as empty input before query handling
+- Require POST before the salary endpoint reaches database configuration
 - Format salary output only after numeric and finite-value validation
 - Keep the primary search functional without third-party JavaScript
 - Preserve company-only and city-only filters in shared search URLs

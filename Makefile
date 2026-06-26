@@ -65,6 +65,8 @@ test:
 	"$$PHP" "$$ROOT/tests/check-find-scalar-inputs.php"
 	"$$PHP" "$$ROOT/tests/check-find-salary-format.php"
 	"$$PHP" "$$ROOT/tests/check-find-fail-closed.php"
+	"$$PHP" "$$ROOT/tests/check-find-request-method.php"
+	"$$PHP" "$$ROOT/tests/check-find-request-method-mutations.php"
 	"$$PHP" "$$ROOT/tests/check-find-pdo-boundary.php"
 	"$$PHP" "$$ROOT/tests/check-pdo-row-budget-mutations.php"
 	"$$PHP" "$$ROOT/tests/check-encoded-result-budget.php"

@@ -19,6 +19,14 @@ function tcp_post_value($key) {
   return isset($_POST[$key]) && is_scalar($_POST[$key]) ? strip_tags(substr((string) $_POST[$key], 0, 100)) : '';
 }
 
+function tcp_request_method($server = null) {
+  $values = $server === null ? $_SERVER : $server;
+  if (!is_array($values) || !isset($values['REQUEST_METHOD']) || !is_string($values['REQUEST_METHOD'])) {
+    return '';
+  }
+  return $values['REQUEST_METHOD'];
+}
+
 function tcp_linkedin_title($title) {
   return htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
 }
@@ -180,8 +188,16 @@ function tcp_render_result_rows($titleRows, $groupRows, $maxBytes = TCP_MAX_RESU
   return $html;
 }
 
-function tcp_run_find_endpoint($factory = null, $environment = null, $titleSql = TCP_TITLE_SQL, $groupSql = TCP_GROUP_SQL) {
+function tcp_run_find_endpoint($factory = null, $environment = null, $titleSql = TCP_TITLE_SQL, $groupSql = TCP_GROUP_SQL, $server = null) {
   tcp_send_security_headers();
+  if (tcp_request_method($server) !== 'POST') {
+    if (!headers_sent()) {
+      http_response_code(405);
+      header('Allow: POST');
+    }
+    echo 'No matches!';
+    return;
+  }
   $config = tcp_database_config($environment);
   if ($config === null) {
     echo 'No matches!';
